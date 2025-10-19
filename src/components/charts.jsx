@@ -44,13 +44,13 @@ const Charts = ({ expenses }) => {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-                <h3 className="text-xl font-bold mb-4 text-gray-800">Spending by Category</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 xl:gap-10">
+            <div className="bg-white p-3 md:p-4 lg:p-6 xl:p-8 2xl:p-10 rounded-2xl shadow-xl border border-gray-200">
+                <h3 className="text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold mb-3 md:mb-4 text-gray-800">Spending by Category</h3>
                 {expenses.length > 0 ? <Pie data={pieChartData} /> : <p className="text-gray-500">No data to display.</p>}
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-                <h3 className="text-xl font-bold mb-4 text-gray-800">Daily Spending Trend</h3>
+            <div className="bg-white p-3 md:p-4 lg:p-6 xl:p-8 2xl:p-10 rounded-2xl shadow-xl border border-gray-200">
+                <h3 className="text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold mb-3 md:mb-4 text-gray-800">Daily Spending Trend</h3>
                 {expenses.length > 0 ? <Line data={lineChartData} /> : <p className="text-gray-500">No data to display.</p>}
             </div>
         </div>

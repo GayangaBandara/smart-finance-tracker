@@ -85,8 +85,8 @@ const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+            <div className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full bg-white p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 rounded-2xl shadow-lg border border-gray-200">
                 {isLogin ? <Login /> : <Signup />}
                 <button
                     onClick={() => setIsLogin(!isLogin)}

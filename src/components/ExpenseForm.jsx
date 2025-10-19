@@ -46,8 +46,8 @@ const ExpenseForm = () => {
     const categories = ['Food', 'Transport', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Other'];
 
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Add New Expense</h2>
+        <div className="bg-white p-3 md:p-4 lg:p-6 xl:p-8 2xl:p-10 rounded-2xl shadow-xl border border-gray-200">
+            <h2 className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-3 md:mb-4 lg:mb-6 text-gray-800">Add New Expense</h2>
             {error && <p className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">{error}</p>}
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

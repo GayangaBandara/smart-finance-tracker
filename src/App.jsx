@@ -11,8 +11,8 @@ const App = () => {
     // This prevents a flash of the login page for already signed-in users.
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-                <p className="text-lg font-semibold text-gray-600">Loading Application...</p>
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+                <p className="text-base md:text-lg font-semibold text-gray-600">Loading Application...</p>
             </div>
         );
     }
