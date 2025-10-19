@@ -6,7 +6,7 @@ import { auth } from '../lib/firebase';
 const AuthContext = createContext();
 
 // Provider component that wraps your app and makes auth object available to any child component that calls useAuth().
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -31,6 +31,12 @@ export const AuthProvider = ({ children }) => {
 };
 
 // Custom hook to use the auth context
-export const useAuth = () => {
-    return useContext(AuthContext);
+const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 };
+
+export { AuthProvider, useAuth };

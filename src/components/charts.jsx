@@ -1,0 +1,60 @@
+import React from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement } from 'chart.js';
+import { Pie, Line } from 'react-chartjs-2';
+
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
+
+const Charts = ({ expenses }) => {
+    // Data for Pie Chart (Category Distribution)
+    const categoryData = expenses.reduce((acc, expense) => {
+        acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+        return acc;
+    }, {});
+
+    const pieChartData = {
+        labels: Object.keys(categoryData),
+        datasets: [
+            {
+                data: Object.values(categoryData),
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'],
+            },
+        ],
+    };
+
+    // Data for Line Chart (Daily Spending)
+    const dailyData = expenses.reduce((acc, expense) => {
+        const date = expense.date;
+        acc[date] = (acc[date] || 0) + expense.amount;
+        return acc;
+    }, {});
+
+    const sortedDates = Object.keys(dailyData).sort((a, b) => new Date(a) - new Date(b));
+
+    const lineChartData = {
+        labels: sortedDates,
+        datasets: [
+            {
+                label: 'Daily Spending',
+                data: sortedDates.map(date => dailyData[date]),
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1,
+            },
+        ],
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
+                <h3 className="text-xl font-bold mb-4 text-gray-800">Spending by Category</h3>
+                {expenses.length > 0 ? <Pie data={pieChartData} /> : <p className="text-gray-500">No data to display.</p>}
+            </div>
+            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
+                <h3 className="text-xl font-bold mb-4 text-gray-800">Daily Spending Trend</h3>
+                {expenses.length > 0 ? <Line data={lineChartData} /> : <p className="text-gray-500">No data to display.</p>}
+            </div>
+        </div>
+    );
+};
+
+export default Charts;
