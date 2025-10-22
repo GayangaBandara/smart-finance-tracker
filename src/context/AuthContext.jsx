@@ -1,5 +1,10 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { 
+    onAuthStateChanged, 
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut
+} from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
 // Create the authentication context
@@ -9,6 +14,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         // Subscribe to user state changes
@@ -21,7 +27,43 @@ const AuthProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
-    const value = { user, loading };
+    // Register new user
+    const register = async (email, password) => {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            return userCredential.user;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    };
+
+    // Sign in user
+    const login = async (email, password) => {
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            return userCredential.user;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    };
+
+    // Sign out
+    const logout = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    };
+
+    const value = {
+        user,
+        loading,
+        error,
+        register,
+        login,
+        logout
+    };
 
     return (
         <AuthContext.Provider value={value}>
