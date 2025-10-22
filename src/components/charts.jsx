@@ -4,10 +4,9 @@ import { Pie, Line } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
 
-const Charts = ({ expenses }) => {
-    // Data for Pie Chart (Category Distribution)
+const Charts = ({ expenses = [] }) => {
     const categoryData = expenses.reduce((acc, expense) => {
-        acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+        acc[expense.category] = (acc[expense.category] || 0) + (expense.amount || 0);
         return acc;
     }, {});
 
@@ -21,10 +20,9 @@ const Charts = ({ expenses }) => {
         ],
     };
 
-    // Data for Line Chart (Daily Spending)
     const dailyData = expenses.reduce((acc, expense) => {
-        const date = expense.date;
-        acc[date] = (acc[date] || 0) + expense.amount;
+        const date = expense.date || new Date().toISOString().slice(0, 10);
+        acc[date] = (acc[date] || 0) + (expense.amount || 0);
         return acc;
     }, {});
 
@@ -35,7 +33,7 @@ const Charts = ({ expenses }) => {
         datasets: [
             {
                 label: 'Daily Spending',
-                data: sortedDates.map(date => dailyData[date]),
+                data: sortedDates.map((d) => dailyData[d]),
                 fill: false,
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.1,

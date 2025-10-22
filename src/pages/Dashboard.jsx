@@ -14,7 +14,10 @@ const Dashboard = () => {
     if (loading) {
         return (
             <div className="container mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10 xl:px-12 xl:py-12 2xl:px-16 2xl:py-16 text-center">
-                <p>Loading your financial data...</p>
+                <p className="text-lg font-semibold text-gray-600">Loading your financial data...</p>
+                <div className="mt-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+                </div>
             </div>
         );
     }

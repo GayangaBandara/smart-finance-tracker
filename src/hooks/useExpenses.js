@@ -29,6 +29,10 @@ const useExpenses = () => {
             });
             setExpenses(expensesData);
             setLoading(false);
+        }, (error) => {
+            console.error("Error fetching expenses:", error);
+            setExpenses([]);
+            setLoading(false);
         });
 
         return () => unsubscribe();
