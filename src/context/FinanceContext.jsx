@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import RetryError from '../components/common/RetryError';
 
 // Initial state
 const initialState = {
@@ -79,89 +80,119 @@ const FinanceContext = createContext();
 export const FinanceProvider = ({ children }) => {
   const [state, dispatch] = useReducer(financeReducer, initialState);
   const { user } = useAuth();
+  const [retryCount, setRetryCount] = React.useState(0);
+  const [isActive, setIsActive] = useState(true);
+  const maxRetries = 3;
+
+  const handleFetchError = useCallback((error, source) => {
+    console.error(`Error fetching ${source}:`, error);
+    
+    // Handle specific Firebase errors
+    if (error.code === 'permission-denied') {
+      dispatch({ type: ACTIONS.SET_ERROR, payload: 'You do not have permission to access this data. Please log out and log in again.' });
+      return;
+    }
+    
+    if (error.code === 'failed-precondition') {
+      dispatch({ type: ACTIONS.SET_ERROR, payload: 'Unable to load data. Please check your connection and try again.' });
+      return;
+    }
+    
+    dispatch({ 
+      type: ACTIONS.SET_ERROR, 
+      payload: `Unable to load ${source}. Please check your connection and try again.`
+    });
+  }, []);
 
   // Load data when user changes
   useEffect(() => {
-    console.log('FinanceContext useEffect triggered, user:', user);
-    if (user) {
-      console.log('Setting up Firebase listener for user:', user.uid);
-      dispatch({ type: ACTIONS.SET_LOADING, payload: true });
-      
-      // Load transactions from Firebase
+    let cleanup = false;
+
+    let unsubscribeTransactions = null;
+    let unsubscribeBudgets = null;
+    let retryTimeout = null;
+
+    // Clear any existing listeners
+    const cleanupListeners = () => {
+      if (retryTimeout) clearTimeout(retryTimeout);
+      if (unsubscribeTransactions) unsubscribeTransactions();
+      if (unsubscribeBudgets) unsubscribeBudgets();
+    };
+
+    // Handle initial state
+    if (!user) {
+      console.log('No user, clearing data');
+      dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: [] });
+      dispatch({ type: ACTIONS.SET_BUDGETS, payload: [] });
+      dispatch({ type: ACTIONS.SET_ERROR, payload: null });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+      return cleanupListeners;
+    }
+
+    // Set up the listeners
+    try {
+      // Transactions listener
       const transactionsQuery = query(
         collection(db, 'transactions'),
         where('uid', '==', user.uid),
         orderBy('date', 'desc')
       );
 
-      // Subscribe to transactions
-      const unsubscribeTransactions = onSnapshot(transactionsQuery, (querySnapshot) => {
-        console.log('Transactions snapshot received, docs count:', querySnapshot.size);
-        const transactionsData = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const processedData = {
-            ...data,
+      unsubscribeTransactions = onSnapshot(transactionsQuery, {
+        next: (snapshot) => {
+          if (!mounted) return;
+          const transactions = snapshot.docs.map(doc => ({
+            ...doc.data(),
             id: doc.id,
-            amount: Number(data.amount),
-            createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt)
-          };
-          transactionsData.push(processedData);
-        });
-        console.log('All fetched transactions:', transactionsData);
-        dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactionsData });
-      }, (error) => {
-        console.error("Error fetching transactions:", error);
-        dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: [] });
+            amount: Number(doc.data().amount),
+            createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt)
+          }));
+          dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactions });
+        },
+        error: (error) => {
+          console.error('Transactions listener error:', error);
+          if (mounted) handleFetchError(error, 'transactions');
+        }
       });
 
-      // Set up budgets query with ordering
+      // Budgets listener
       const budgetsQuery = query(
         collection(db, 'budgets'),
         where('uid', '==', user.uid),
         orderBy('createdAt', 'desc')
       );
 
-      const unsubscribeBudgets = onSnapshot(budgetsQuery, (querySnapshot) => {
-        console.log('Budgets snapshot received, docs count:', querySnapshot.size);
-        const budgetsData = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const processedData = {
-            ...data,
+      unsubscribeBudgets = onSnapshot(budgetsQuery, {
+        next: (snapshot) => {
+          if (!mounted) return;
+          const budgets = snapshot.docs.map(doc => ({
+            ...doc.data(),
             id: doc.id,
-            amount: Number(data.amount),
-            createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
-            updatedAt: data.updatedAt?.toDate?.() || new Date(data.updatedAt)
-          };
-          // Ensure all required fields are present
-          if (processedData.category && processedData.amount) {
-            budgetsData.push(processedData);
-          } else {
-            console.warn('Skipping invalid budget data:', processedData);
-          }
-        });
-        console.log('All fetched budgets:', budgetsData);
-        dispatch({ type: ACTIONS.SET_BUDGETS, payload: budgetsData });
-      }, (error) => {
-        console.error("Error fetching budgets:", error);
-        dispatch({ type: ACTIONS.SET_BUDGETS, payload: [] });
-        dispatch({ type: ACTIONS.SET_ERROR, payload: 'Failed to fetch budgets' });
+            amount: Number(doc.data().amount),
+            createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt),
+            updatedAt: doc.data().updatedAt?.toDate?.() || new Date(doc.data().updatedAt)
+          })).filter(budget => budget.category && !isNaN(budget.amount));
+          dispatch({ type: ACTIONS.SET_BUDGETS, payload: budgets });
+          dispatch({ type: ACTIONS.SET_ERROR, payload: null });
+        },
+        error: (error) => {
+          console.error('Budgets listener error:', error);
+          if (mounted) handleFetchError(error, 'budgets');
+        }
       });
 
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
-
-      return () => {
-        unsubscribeTransactions();
-        unsubscribeBudgets();
-      };
-    } else {
-      console.log('No user, clearing transactions');
-      dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: [] });
-      dispatch({ type: ACTIONS.SET_BUDGETS, payload: [] });
-      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+    } catch (error) {
+      console.error('Setup error:', error);
+      if (mounted) handleFetchError(error, 'setup');
     }
-  }, [user]);
+
+    // Cleanup on unmount
+    return () => {
+      cleanup = true;
+      cleanupListeners();
+    };
+  }, [user, handleFetchError]);
 
   // Action creators
   const setLoading = (loading) => dispatch({ type: ACTIONS.SET_LOADING, payload: loading });
@@ -449,6 +480,7 @@ export const FinanceProvider = ({ children }) => {
       throw error;
     }
   };
+
   const setError = (error) => dispatch({ type: ACTIONS.SET_ERROR, payload: error });
   const clearError = () => dispatch({ type: ACTIONS.CLEAR_ERROR });
 
@@ -469,6 +501,15 @@ export const FinanceProvider = ({ children }) => {
 
   return (
     <FinanceContext.Provider value={value}>
+      {state.error && (
+        <RetryError
+          error={state.error}
+          onRetry={() => {
+            clearError();
+            setRetryCount(0);
+          }}
+        />
+      )}
       {children}
     </FinanceContext.Provider>
   );
