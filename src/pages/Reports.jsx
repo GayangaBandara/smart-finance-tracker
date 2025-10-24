@@ -1,7 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { Download, Calendar, TrendingUp, TrendingDown } from 'lucide-react';
+import { Download, Calendar, TrendingUp, TrendingDown, FileText, File } from 'lucide-react';
 import Button from '../components/common/Button';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, AlignmentType } from 'docx';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -162,7 +165,7 @@ const Reports = () => {
     ],
   };
 
-  const exportReport = () => {
+  const exportReport = (format) => {
     const reportData = {
       summary,
       categoryBreakdown,
@@ -171,21 +174,208 @@ const Reports = () => {
       generatedAt: new Date().toISOString(),
     };
 
-    const blob = new Blob([JSON.stringify(reportData, null, 2)], {
-      type: 'application/json'
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `finance-report-${dateRange}-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    if (format === 'json') {
+      const blob = new Blob([JSON.stringify(reportData, null, 2)], {
+        type: 'application/json'
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `finance-report-${dateRange}-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else if (format === 'pdf') {
+      exportToPDF();
+    } else if (format === 'word') {
+      exportToWord();
+    }
+  };
+
+  const exportToPDF = async () => {
+    const element = document.getElementById('report-content');
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`finance-report-${dateRange}-${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+
+  const exportToWord = async () => {
+    try {
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Financial Report",
+                  bold: true,
+                  size: 32,
+                }),
+              ],
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Generated on: ${new Date().toLocaleDateString()}`,
+                  size: 20,
+                }),
+              ],
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Period: ${dateRange}`,
+                  size: 20,
+                }),
+              ],
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "",
+                }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Summary",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Total Income: $${summary.income.toFixed(2)}`,
+                }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Total Expenses: $${summary.expenses.toFixed(2)}`,
+                }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Net Income: $${summary.netIncome.toFixed(2)}`,
+                }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "",
+                }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Category Breakdown",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+            }),
+            new Table({
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [new Paragraph("Category")],
+                    }),
+                    new TableCell({
+                      children: [new Paragraph("Income")],
+                    }),
+                    new TableCell({
+                      children: [new Paragraph("Expenses")],
+                    }),
+                    new TableCell({
+                      children: [new Paragraph("Net")],
+                    }),
+                  ],
+                }),
+                ...categoryBreakdown.map(cat => new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [new Paragraph(cat.category)],
+                    }),
+                    new TableCell({
+                      children: [new Paragraph(`$${cat.income.toFixed(2)}`)],
+                    }),
+                    new TableCell({
+                      children: [new Paragraph(`$${cat.expense.toFixed(2)}`)],
+                    }),
+                    new TableCell({
+                      children: [new Paragraph(`$${cat.net.toFixed(2)}`)],
+                    }),
+                  ],
+                })),
+              ],
+            }),
+          ],
+        }],
+      });
+
+      const buffer = await Packer.toBuffer(doc);
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `finance-report-${dateRange}-${new Date().toISOString().split('T')[0]}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error generating Word document:', error);
+    }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" id="report-content">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Financial Reports</h1>
@@ -204,10 +394,20 @@ const Reports = () => {
             <option value="year">Last Year</option>
           </select>
 
-          <Button onClick={exportReport} className="flex items-center space-x-2">
-            <Download size={16} />
-            <span>Export Report</span>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={() => exportReport('pdf')} className="flex items-center space-x-2">
+              <FileText size={16} />
+              <span>Export PDF</span>
+            </Button>
+            <Button onClick={() => exportReport('word')} className="flex items-center space-x-2">
+              <File size={16} />
+              <span>Export Word</span>
+            </Button>
+            <Button onClick={() => exportReport('json')} variant="outline" className="flex items-center space-x-2">
+              <Download size={16} />
+              <span>Export JSON</span>
+            </Button>
+          </div>
         </div>
       </div>
 

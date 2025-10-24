@@ -1,9 +1,10 @@
 import React from 'react';
 import { useFinance } from '../../context/FinanceContext';
-import { TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, Trash2 } from 'lucide-react';
+import Button from '../common/Button';
 
 const BudgetOverview = () => {
-  const { budgets, transactions } = useFinance();
+  const { budgets, transactions, deleteBudget } = useFinance();
 
   // Calculate spending by category
   const spendingByCategory = transactions
@@ -23,6 +24,16 @@ const BudgetOverview = () => {
       return { status: 'warning', color: 'text-yellow-600', bgColor: 'bg-yellow-50', icon: AlertTriangle };
     } else {
       return { status: 'good', color: 'text-green-600', bgColor: 'bg-green-50', icon: TrendingUp };
+    }
+  };
+
+  const handleDeleteBudget = async (budgetId) => {
+    if (window.confirm('Are you sure you want to delete this budget?')) {
+      try {
+        await deleteBudget(budgetId);
+      } catch (error) {
+        console.error('Error deleting budget:', error);
+      }
     }
   };
 
@@ -109,15 +120,26 @@ const BudgetOverview = () => {
                     </div>
                   </div>
 
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between items-center text-sm">
                     <span className={status.color}>
                       {status.status === 'over' && 'Over budget!'}
                       {status.status === 'warning' && 'Close to limit'}
                       {status.status === 'good' && 'On track'}
                     </span>
-                    <span className="text-gray-600">
-                      ${(budget.amount - spent).toFixed(2)} remaining
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-600">
+                        ${(budget.amount - spent).toFixed(2)} remaining
+                      </span>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteBudget(budget.id)}
+                        className="p-1"
+                        title="Delete budget"
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
