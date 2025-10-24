@@ -29,7 +29,7 @@ ChartJS.register(
 );
 
 const Reports = () => {
-  const { transactions } = useFinance();
+  const { transactions, budgets } = useFinance();
   const [dateRange, setDateRange] = useState('month');
 
   // Filter transactions based on date range
@@ -265,6 +265,64 @@ const Reports = () => {
       <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200 mb-8">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Income vs Expenses by Category</h3>
         <Bar data={barChartData} />
+      </div>
+
+      {/* Budget Analysis */}
+      <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200 mb-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Budget Analysis</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {budgets.map(budget => {
+            const categoryTransactions = filteredTransactions.filter(t => 
+              t.category === budget.category && 
+              t.type === 'expense'
+            );
+            const spentAmount = categoryTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+            const remainingAmount = Number(budget.amount) - spentAmount;
+            const percentage = (spentAmount / Number(budget.amount)) * 100;
+
+            return (
+              <div key={budget.id} className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-gray-700">{budget.category}</h4>
+                  <span className="text-sm text-gray-500">{budget.period}</span>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Budget Amount:</span>
+                    <span className="font-medium">${Number(budget.amount).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Spent Amount:</span>
+                    <span className="font-medium">${spentAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Remaining:</span>
+                    <span className={`font-medium ${remainingAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      ${Math.abs(remainingAmount).toFixed(2)}
+                      {remainingAmount < 0 ? ' (Over Budget)' : ''}
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Budget Utilization:</span>
+                      <span className="font-medium">{percentage.toFixed(1)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div
+                        className={`h-2.5 rounded-full ${
+                          percentage > 90 ? 'bg-red-600' :
+                          percentage > 70 ? 'bg-yellow-500' :
+                          'bg-green-600'
+                        }`}
+                        style={{ width: `${Math.min(percentage, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Category Breakdown Table */}

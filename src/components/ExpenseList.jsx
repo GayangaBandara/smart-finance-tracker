@@ -1,11 +1,13 @@
 import React from 'react';
-import { deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { useFinance } from '../context/FinanceContext';
 
 const ExpenseList = ({ expenses }) => {
+    const { deleteTransaction } = useFinance();
+    console.log('Expenses in ExpenseList:', expenses);
+
     const handleDelete = async (id) => {
         try {
-            await deleteDoc(doc(db, "expenses", id));
+            await deleteTransaction(id);
         } catch (error) {
             console.error("Error deleting document: ", error);
         }

@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 // Initial state
 const initialState = {
@@ -80,25 +82,283 @@ export const FinanceProvider = ({ children }) => {
 
   // Load data when user changes
   useEffect(() => {
+    console.log('FinanceContext useEffect triggered, user:', user);
     if (user) {
-      // Load transactions and budgets from Firebase
-      // This will be implemented when we add the services
+      console.log('Setting up Firebase listener for user:', user.uid);
+      dispatch({ type: ACTIONS.SET_LOADING, payload: true });
+      
+      // Load transactions from Firebase
+      const transactionsQuery = query(
+        collection(db, 'transactions'),
+        where('uid', '==', user.uid),
+        orderBy('date', 'desc')
+      );
+
+      // Subscribe to transactions
+      const unsubscribeTransactions = onSnapshot(transactionsQuery, (querySnapshot) => {
+        console.log('Transactions snapshot received, docs count:', querySnapshot.size);
+        const transactionsData = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const processedData = {
+            ...data,
+            id: doc.id,
+            amount: Number(data.amount),
+            createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt)
+          };
+          transactionsData.push(processedData);
+        });
+        console.log('All fetched transactions:', transactionsData);
+        dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactionsData });
+      }, (error) => {
+        console.error("Error fetching transactions:", error);
+        dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: [] });
+      });
+
+      // Set up budgets query with ordering
+      const budgetsQuery = query(
+        collection(db, 'budgets'),
+        where('uid', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+
+      const unsubscribeBudgets = onSnapshot(budgetsQuery, (querySnapshot) => {
+        console.log('Budgets snapshot received, docs count:', querySnapshot.size);
+        const budgetsData = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const processedData = {
+            ...data,
+            id: doc.id,
+            amount: Number(data.amount),
+            createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
+            updatedAt: data.updatedAt?.toDate?.() || new Date(data.updatedAt)
+          };
+          // Ensure all required fields are present
+          if (processedData.category && processedData.amount) {
+            budgetsData.push(processedData);
+          } else {
+            console.warn('Skipping invalid budget data:', processedData);
+          }
+        });
+        console.log('All fetched budgets:', budgetsData);
+        dispatch({ type: ACTIONS.SET_BUDGETS, payload: budgetsData });
+      }, (error) => {
+        console.error("Error fetching budgets:", error);
+        dispatch({ type: ACTIONS.SET_BUDGETS, payload: [] });
+        dispatch({ type: ACTIONS.SET_ERROR, payload: 'Failed to fetch budgets' });
+      });
+
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+
+      return () => {
+        unsubscribeTransactions();
+        unsubscribeBudgets();
+      };
     } else {
+      console.log('No user, clearing transactions');
       dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: [] });
       dispatch({ type: ACTIONS.SET_BUDGETS, payload: [] });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     }
   }, [user]);
 
   // Action creators
   const setLoading = (loading) => dispatch({ type: ACTIONS.SET_LOADING, payload: loading });
   const setTransactions = (transactions) => dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactions });
-  const addTransaction = (transaction) => dispatch({ type: ACTIONS.ADD_TRANSACTION, payload: transaction });
-  const updateTransaction = (transaction) => dispatch({ type: ACTIONS.UPDATE_TRANSACTION, payload: transaction });
-  const deleteTransaction = (id) => dispatch({ type: ACTIONS.DELETE_TRANSACTION, payload: id });
+  const addTransaction = async (transaction) => {
+    try {
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
+
+      if (!user.uid) {
+        throw new Error('User ID is missing');
+      }
+
+      const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
+      
+      console.log('Adding transaction:', transaction);
+      console.log('Current user:', user);
+      console.log('User ID:', user.uid);
+      console.log('Using database instance:', db);
+
+      // Validate transaction data
+      if (!transaction.amount || isNaN(transaction.amount)) {
+        throw new Error('Invalid amount');
+      }
+      if (!transaction.category) {
+        throw new Error('Category is required');
+      }
+      if (!transaction.date) {
+        throw new Error('Date is required');
+      }
+
+      const transactionData = {
+        ...transaction,
+        uid: user.uid,
+        createdAt: serverTimestamp(),
+        amount: Number(transaction.amount),
+        updatedAt: serverTimestamp()
+      };
+
+      console.log('Preparing to save transaction data:', transactionData);
+
+      const docRef = await addDoc(collection(db, 'transactions'), transactionData);
+
+      console.log('Transaction added with ID:', docRef.id);
+
+      // Add to local state with the generated ID
+      const newTransaction = {
+        ...transactionData,
+        id: docRef.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      dispatch({ type: ACTIONS.ADD_TRANSACTION, payload: newTransaction });
+      console.log('Local state updated with new transaction');
+
+      return newTransaction;
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+      console.error('Error details:', error.message);
+      dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to add transaction: ${error.message}` });
+      throw error;
+    }
+  };
+  const updateTransaction = async (transaction) => {
+    try {
+      const { doc, updateDoc } = await import('firebase/firestore');
+      await updateDoc(doc(db, 'transactions', transaction.id), {
+        ...transaction,
+        amount: Number(transaction.amount),
+        updatedAt: new Date()
+      });
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION, payload: transaction });
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      dispatch({ type: ACTIONS.SET_ERROR, payload: 'Failed to update transaction' });
+      throw error;
+    }
+  };
+  const deleteTransaction = async (id) => {
+    try {
+      const { deleteDoc, doc } = await import('firebase/firestore');
+      await deleteDoc(doc(db, 'transactions', id)); // Changed from 'expenses' to 'transactions'
+      dispatch({ type: ACTIONS.DELETE_TRANSACTION, payload: id });
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      dispatch({ type: ACTIONS.SET_ERROR, payload: 'Failed to delete transaction' });
+      throw error;
+    }
+  };
   const setBudgets = (budgets) => dispatch({ type: ACTIONS.SET_BUDGETS, payload: budgets });
-  const addBudget = (budget) => dispatch({ type: ACTIONS.ADD_BUDGET, payload: budget });
-  const updateBudget = (budget) => dispatch({ type: ACTIONS.UPDATE_BUDGET, payload: budget });
-  const deleteBudget = (id) => dispatch({ type: ACTIONS.DELETE_BUDGET, payload: id });
+  
+  const addBudget = async (budget) => {
+    try {
+      if (!user || !user.uid) {
+        throw new Error('User must be authenticated to add a budget');
+      }
+
+      const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
+      console.log('Adding budget:', budget);
+      
+      // Prepare budget data
+      const budgetData = {
+        ...budget,
+        uid: user.uid,
+        amount: Number(budget.amount),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        // Ensure all required fields are present
+        category: budget.category,
+        period: budget.period || 'monthly', // Default to monthly if not specified
+      };
+
+      console.log('Prepared budget data:', budgetData);
+      
+      const docRef = await addDoc(collection(db, 'budgets'), budgetData);
+      console.log('Budget added with ID:', docRef.id);
+
+      // Create the complete budget object for local state
+      const newBudget = {
+        ...budgetData,
+        id: docRef.id,
+        amount: Number(budgetData.amount), // Ensure amount is a number
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Update local state immediately
+      dispatch({ type: ACTIONS.ADD_BUDGET, payload: newBudget });
+      console.log('Local state updated with new budget:', newBudget);
+
+      return newBudget;
+    } catch (error) {
+      console.error('Error adding budget:', error);
+      console.error('Error details:', error.message);
+      dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to add budget: ${error.message}` });
+      throw error;
+    }
+  };
+
+  const updateBudget = async (budget) => {
+    try {
+      if (!user || !user.uid) {
+        throw new Error('User must be authenticated to update a budget');
+      }
+
+      if (!budget.id) {
+        throw new Error('Budget ID is required for updates');
+      }
+
+      const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
+      
+      // Prepare update data
+      const updateData = {
+        ...budget,
+        uid: user.uid,
+        amount: Number(budget.amount),
+        updatedAt: serverTimestamp()
+      };
+
+      console.log('Updating budget with ID:', budget.id);
+      console.log('Update data:', updateData);
+
+      // Update in Firestore
+      await updateDoc(doc(db, 'budgets', budget.id), updateData);
+      
+      // Update local state with the new data
+      const updatedBudget = {
+        ...updateData,
+        id: budget.id,
+        updatedAt: new Date()
+      };
+      
+      dispatch({ type: ACTIONS.UPDATE_BUDGET, payload: updatedBudget });
+      console.log('Budget updated successfully:', updatedBudget);
+
+      return updatedBudget;
+    } catch (error) {
+      console.error('Error updating budget:', error);
+      console.error('Error details:', error.message);
+      dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to update budget: ${error.message}` });
+      throw error;
+    }
+  };
+
+  const deleteBudget = async (id) => {
+    try {
+      const { doc, deleteDoc } = await import('firebase/firestore');
+      await deleteDoc(doc(db, 'budgets', id));
+      dispatch({ type: ACTIONS.DELETE_BUDGET, payload: id });
+    } catch (error) {
+      console.error('Error deleting budget:', error);
+      dispatch({ type: ACTIONS.SET_ERROR, payload: 'Failed to delete budget' });
+      throw error;
+    }
+  };
   const setError = (error) => dispatch({ type: ACTIONS.SET_ERROR, payload: error });
   const clearError = () => dispatch({ type: ACTIONS.CLEAR_ERROR });
 

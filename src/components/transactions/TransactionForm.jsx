@@ -23,6 +23,8 @@ const TransactionForm = ({ onSuccess }) => {
     register,
     handleSubmit,
     reset,
+    getValues,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -43,7 +45,6 @@ const TransactionForm = ({ onSuccess }) => {
       await addTransaction({
         ...data,
         amount: parseFloat(data.amount),
-        createdAt: new Date(),
       });
       reset();
       if (onSuccess) onSuccess();
@@ -56,8 +57,9 @@ const TransactionForm = ({ onSuccess }) => {
 
   const handleTypeChange = (type) => {
     // Reset category when type changes
+    // use getValues() provided by react-hook-form instead of accessing it from reset
     reset({
-      ...reset.getValues(),
+      ...getValues(),
       type,
       category: '',
     });
@@ -119,7 +121,7 @@ const TransactionForm = ({ onSuccess }) => {
             className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">Select a category</option>
-            {categories.expense.map(cat => (
+            {(categories[watch('type') || 'expense'] || []).map(cat => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>

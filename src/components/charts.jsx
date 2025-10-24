@@ -5,24 +5,35 @@ import { Pie, Line } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
 
 const Charts = ({ expenses = [] }) => {
-    const categoryData = expenses.reduce((acc, expense) => {
-        acc[expense.category] = (acc[expense.category] || 0) + (expense.amount || 0);
-        return acc;
-    }, {});
+    // Separate expenses and income
+    const expenseData = expenses
+        .filter(t => t.type === 'expense')
+        .reduce((acc, expense) => {
+            acc[expense.category] = (acc[expense.category] || 0) + Number(expense.amount || 0);
+            return acc;
+        }, {});
 
     const pieChartData = {
-        labels: Object.keys(categoryData),
+        labels: Object.keys(expenseData),
         datasets: [
             {
-                data: Object.values(categoryData),
+                label: 'Expenses by Category',
+                data: Object.values(expenseData),
                 backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'],
             },
         ],
     };
 
-    const dailyData = expenses.reduce((acc, expense) => {
-        const date = expense.date || new Date().toISOString().slice(0, 10);
-        acc[date] = (acc[date] || 0) + (expense.amount || 0);
+    const dailyData = expenses.reduce((acc, transaction) => {
+        const date = transaction.date || new Date().toISOString().slice(0, 10);
+        if (!acc[date]) {
+            acc[date] = { income: 0, expenses: 0 };
+        }
+        if (transaction.type === 'income') {
+            acc[date].income += Number(transaction.amount || 0);
+        } else {
+            acc[date].expenses += Number(transaction.amount || 0);
+        }
         return acc;
     }, {});
 
@@ -32,10 +43,17 @@ const Charts = ({ expenses = [] }) => {
         labels: sortedDates,
         datasets: [
             {
-                label: 'Daily Spending',
-                data: sortedDates.map((d) => dailyData[d]),
+                label: 'Income',
+                data: sortedDates.map((d) => dailyData[d].income),
                 fill: false,
-                borderColor: 'rgb(75, 192, 192)',
+                borderColor: 'rgb(34, 197, 94)',
+                tension: 0.1,
+            },
+            {
+                label: 'Expenses',
+                data: sortedDates.map((d) => dailyData[d].expenses),
+                fill: false,
+                borderColor: 'rgb(239, 68, 68)',
                 tension: 0.1,
             },
         ],

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext.jsx';
 import { FinanceProvider } from './context/FinanceContext.jsx';
 import Header from './components/layout/Header.jsx';
 import Sidebar from './components/layout/Sidebar.jsx';
@@ -32,10 +31,9 @@ const AppLayout = ({ children }) => (
 
 const App = () => {
   return (
-    <AuthProvider>
-      <FinanceProvider>
-        <Router>
-          <div className="App">
+    <FinanceProvider>
+      <Router>
+        <div className="App">
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Home />} />
@@ -130,7 +128,6 @@ const App = () => {
           </div>
         </Router>
       </FinanceProvider>
-    </AuthProvider>
   );
 };
 

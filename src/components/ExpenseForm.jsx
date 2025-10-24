@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
+import { useFinance } from '../context/FinanceContext';
 
 const ExpenseForm = () => {
     const { user } = useAuth();
+    const { addTransaction } = useFinance();
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('Food');
     const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -17,20 +19,25 @@ const ExpenseForm = () => {
             setError('Please enter a valid amount.');
             return;
         }
-        if (!user) {
+        if (!user || !user.uid) {
             setError('You must be logged in to add an expense.');
+            console.log('Auth state:', user);
             return;
         }
+        console.log('Submitting with user:', user.uid);
 
         try {
-            await addDoc(collection(db, 'expenses'), {
-                uid: user.uid,
+            const newTransaction = {
                 amount: parseFloat(amount),
                 category,
                 date,
                 note,
-                createdAt: serverTimestamp()
-            });
+                uid: user.uid
+            };
+
+            // Using context's addTransaction which handles Firebase interaction
+            await addTransaction(newTransaction);
+
             // Reset form fields after successful submission
             setAmount('');
             setCategory('Food');
