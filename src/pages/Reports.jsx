@@ -374,6 +374,30 @@ const Reports = () => {
     }
   };
 
+  // Delete a transaction
+  const deleteTransaction = async (transactionId) => {
+    try {
+      await deleteTransaction(transactionId);
+    } catch (error) {
+      console.error('Failed to delete:', error);
+    }
+  };
+
+  // Edit a transaction
+  const updateTransaction = async ({ transactionId, newAmount, category, date, note }) => {
+    try {
+      await updateTransaction({
+        id: transactionId,
+        amount: newAmount,
+        category: category,
+        date: date,
+        note: note
+      });
+    } catch (error) {
+      console.error('Failed to update:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8" id="report-content">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">

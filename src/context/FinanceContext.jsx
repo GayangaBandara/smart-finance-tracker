@@ -229,27 +229,92 @@ export const FinanceProvider = ({ children }) => {
   };
   const updateTransaction = async (transaction) => {
     try {
-      const { doc, updateDoc } = await import('firebase/firestore');
-      await updateDoc(doc(db, 'transactions', transaction.id), {
+      if (!user || !user.uid) {
+        throw new Error('User must be authenticated to update a transaction');
+      }
+
+      if (!transaction.id) {
+        throw new Error('Transaction ID is required for updates');
+      }
+
+      const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
+      
+      // Validate transaction data
+      if (!transaction.amount || isNaN(transaction.amount)) {
+        throw new Error('Invalid amount');
+      }
+      if (!transaction.category) {
+        throw new Error('Category is required');
+      }
+      if (!transaction.date) {
+        throw new Error('Date is required');
+      }
+
+      // Prepare update data
+      const updateData = {
         ...transaction,
+        uid: user.uid,
         amount: Number(transaction.amount),
+        updatedAt: serverTimestamp()
+      };
+
+      console.log('Updating transaction with ID:', transaction.id);
+      console.log('Update data:', updateData);
+
+      // Update in Firestore
+      await updateDoc(doc(db, 'transactions', transaction.id), updateData);
+      
+      // Update local state with the new data
+      const updatedTransaction = {
+        ...updateData,
+        id: transaction.id,
         updatedAt: new Date()
-      });
-      dispatch({ type: ACTIONS.UPDATE_TRANSACTION, payload: transaction });
+      };
+
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION, payload: updatedTransaction });
+      console.log('Transaction updated successfully');
+      
+      return updatedTransaction;
     } catch (error) {
       console.error('Error updating transaction:', error);
-      dispatch({ type: ACTIONS.SET_ERROR, payload: 'Failed to update transaction' });
+      console.error('Error details:', error.message);
+      dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to update transaction: ${error.message}` });
       throw error;
     }
   };
   const deleteTransaction = async (id) => {
     try {
-      const { deleteDoc, doc } = await import('firebase/firestore');
-      await deleteDoc(doc(db, 'transactions', id)); // Changed from 'expenses' to 'transactions'
+      if (!user || !user.uid) {
+        throw new Error('User must be authenticated to delete a transaction');
+      }
+
+      const { deleteDoc, doc, getDoc } = await import('firebase/firestore');
+      
+      // First, get the document to verify ownership
+      const transactionRef = doc(db, 'transactions', id);
+      const transactionDoc = await getDoc(transactionRef);
+      
+      if (!transactionDoc.exists()) {
+        throw new Error('Transaction not found');
+      }
+
+      const transactionData = transactionDoc.data();
+      if (transactionData.uid !== user.uid) {
+        throw new Error('Unauthorized to delete this transaction');
+      }
+
+      console.log('Deleting transaction with ID:', id);
+      await deleteDoc(transactionRef);
+      
+      // Update local state
       dispatch({ type: ACTIONS.DELETE_TRANSACTION, payload: id });
+      console.log('Transaction deleted successfully');
     } catch (error) {
       console.error('Error deleting transaction:', error);
-      dispatch({ type: ACTIONS.SET_ERROR, payload: 'Failed to delete transaction' });
+      const errorMessage = error.code === 'permission-denied' 
+        ? 'You do not have permission to delete this transaction' 
+        : error.message;
+      dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to delete transaction: ${errorMessage}` });
       throw error;
     }
   };
@@ -350,12 +415,37 @@ export const FinanceProvider = ({ children }) => {
 
   const deleteBudget = async (id) => {
     try {
-      const { doc, deleteDoc } = await import('firebase/firestore');
-      await deleteDoc(doc(db, 'budgets', id));
+      if (!user || !user.uid) {
+        throw new Error('User must be authenticated to delete a budget');
+      }
+
+      const { doc, deleteDoc, getDoc } = await import('firebase/firestore');
+      
+      // First, get the document to verify ownership
+      const budgetRef = doc(db, 'budgets', id);
+      const budgetDoc = await getDoc(budgetRef);
+      
+      if (!budgetDoc.exists()) {
+        throw new Error('Budget not found');
+      }
+
+      const budgetData = budgetDoc.data();
+      if (budgetData.uid !== user.uid) {
+        throw new Error('Unauthorized to delete this budget');
+      }
+
+      console.log('Deleting budget with ID:', id);
+      await deleteDoc(budgetRef);
+      
+      // Update local state
       dispatch({ type: ACTIONS.DELETE_BUDGET, payload: id });
+      console.log('Budget deleted successfully');
     } catch (error) {
       console.error('Error deleting budget:', error);
-      dispatch({ type: ACTIONS.SET_ERROR, payload: 'Failed to delete budget' });
+      const errorMessage = error.code === 'permission-denied' 
+        ? 'You do not have permission to delete this budget' 
+        : error.message;
+      dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to delete budget: ${errorMessage}` });
       throw error;
     }
   };
