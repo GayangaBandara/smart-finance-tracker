@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useFinance } from '../../context/FinanceContext';
 import Input from '../common/Input';
 import Button from '../common/Button';
+import { FormError } from '../common/FormError';
 
 // Validation schema
 const schema = yup.object({
@@ -65,11 +66,7 @@ const BudgetForm = ({ onSuccess, editingBudget }) => {
         {editingBudget ? 'Edit Budget' : 'Create Budget'}
       </h2>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
-          {error}
-        </div>
-      )}
+      <FormError error={error} className="mb-4" />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Category */}

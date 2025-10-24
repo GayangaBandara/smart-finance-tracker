@@ -31,7 +31,6 @@ ChartJS.register(
 const Reports = () => {
   const { transactions } = useFinance();
   const [dateRange, setDateRange] = useState('month');
-  const [reportType, setReportType] = useState('overview');
 
   // Filter transactions based on date range
   const filteredTransactions = useMemo(() => {

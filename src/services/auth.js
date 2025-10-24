@@ -26,8 +26,8 @@ export const authService = {
         user: userCredential.user,
         success: true,
       };
-    } catch (error) {
-      throw new Error(getAuthErrorMessage(error.code));
+    } catch (err) {
+      throw new Error(getAuthErrorMessage(err.code));
     }
   },
 
@@ -39,8 +39,8 @@ export const authService = {
         user: userCredential.user,
         success: true,
       };
-    } catch (error) {
-      throw new Error(getAuthErrorMessage(error.code));
+    } catch (err) {
+      throw new Error(getAuthErrorMessage(err.code));
     }
   },
 
@@ -49,7 +49,7 @@ export const authService = {
     try {
       await signOut(auth);
       return { success: true };
-    } catch (error) {
+    } catch {
       throw new Error('Failed to sign out');
     }
   },
@@ -85,7 +85,7 @@ export const authService = {
         return { success: true };
       }
       throw new Error('No user signed in');
-    } catch (error) {
+    } catch {
       throw new Error('Failed to update profile');
     }
   },

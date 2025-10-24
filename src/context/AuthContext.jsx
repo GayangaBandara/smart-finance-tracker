@@ -14,7 +14,6 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         // Subscribe to user state changes
@@ -59,7 +58,6 @@ const AuthProvider = ({ children }) => {
     const value = {
         user,
         loading,
-        error,
         register,
         login,
         logout

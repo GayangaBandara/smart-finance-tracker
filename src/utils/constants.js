@@ -78,7 +78,7 @@ export const VALIDATION_RULES = {
 
 // API endpoints (for future use)
 export const API_ENDPOINTS = {
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   AUTH: {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
