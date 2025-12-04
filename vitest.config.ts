@@ -16,11 +16,11 @@ export default defineConfig({
         url: 'http://localhost',
         pretendToBeVisual: true,
         resources: 'usable',
-        runScripts: 'dangerously'
-      }
-    }
+        runScripts: 'dangerously',
+      },
+    },
   },
   define: {
     global: 'globalThis',
-  }
+  },
 });
