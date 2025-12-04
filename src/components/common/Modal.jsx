@@ -1,15 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
-const Modal = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-  size = 'md',
-  className = '',
-  ariaLabel,
-}) => {
+const Modal = ({ isOpen, onClose, title, children, size = 'md', className = '', ariaLabel }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -67,10 +59,7 @@ const Modal = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 overflow-y-auto"
-      role="presentation"
-    >
+    <div className="fixed inset-0 z-50 overflow-y-auto" role="presentation">
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         {/* Background overlay */}
         <div
@@ -103,9 +92,7 @@ const Modal = ({
           </div>
 
           {/* Content */}
-          <div className="px-6 py-4">
-            {children}
-          </div>
+          <div className="px-6 py-4">{children}</div>
         </div>
       </div>
     </div>

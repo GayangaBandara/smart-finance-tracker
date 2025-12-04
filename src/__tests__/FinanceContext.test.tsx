@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest';
 
 describe('FinanceContext', () => {
   it('should be properly set up', () => {
     // Placeholder test - full context testing requires Firebase mock setup
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should initialize with default state', () => {
     const initialState = {
@@ -12,8 +12,8 @@ describe('FinanceContext', () => {
       budgets: [],
       loading: false,
       error: null,
-    }
-    expect(initialState.transactions).toHaveLength(0)
-    expect(initialState.budgets).toHaveLength(0)
-  })
-})
+    };
+    expect(initialState.transactions).toHaveLength(0);
+    expect(initialState.budgets).toHaveLength(0);
+  });
+});

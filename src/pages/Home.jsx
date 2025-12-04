@@ -38,14 +38,12 @@ const Home = () => {
               <span className="text-indigo-600"> Finances</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Track expenses, manage budgets, and gain insights into your spending habits
-              with our comprehensive finance tracking solution.
+              Track expenses, manage budgets, and gain insights into your spending habits with our
+              comprehensive finance tracking solution.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/register">
-                <Button size="lg">
-                  Get Started Free
-                </Button>
+                <Button size="lg">Get Started Free</Button>
               </Link>
               <Link to="/login">
                 <Button variant="outline" size="lg">
@@ -77,12 +75,8 @@ const Home = () => {
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
                     <Icon className="w-8 h-8 text-indigo-600" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600">
-                    {feature.description}
-                  </p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
                 </div>
               );
             })}

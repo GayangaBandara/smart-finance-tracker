@@ -10,22 +10,13 @@ const Footer = () => {
               © 2024 Finance Tracker. All rights reserved.
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a
-                href="#"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-              >
+              <a href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                 Privacy Policy
               </a>
-              <a
-                href="#"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-              >
+              <a href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                 Terms of Service
               </a>
-              <a
-                href="#"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-              >
+              <a href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                 Support
               </a>
             </div>

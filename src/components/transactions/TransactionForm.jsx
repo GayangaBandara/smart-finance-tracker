@@ -121,11 +121,15 @@ const TransactionForm = ({ onSuccess }) => {
             className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">Select a category</option>
-            {(categories[watch('type') || 'expense'] || []).map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+            {(categories[watch('type') || 'expense'] || []).map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
-          {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>}
+          {errors.category && (
+            <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+          )}
         </div>
 
         {/* Date */}
@@ -148,11 +152,7 @@ const TransactionForm = ({ onSuccess }) => {
           />
         </div>
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={submitLoading || loading}
-        >
+        <Button type="submit" className="w-full" disabled={submitLoading || loading}>
           {submitLoading ? 'Adding...' : 'Add Transaction'}
         </Button>
       </form>

@@ -20,6 +20,7 @@
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **React 19** - Modern React with concurrent features
 - **Vite** - Next-generation frontend tooling
 - **Tailwind CSS** - Utility-first CSS framework
@@ -28,17 +29,20 @@
 - **Yup** - Schema validation for forms
 
 ### Backend & Database
+
 - **Firebase** - Backend-as-a-Service platform
   - Firestore for real-time database
   - Authentication for user management
 - **Axios** - HTTP client for API requests
 
 ### Charts & Visualization
+
 - **Chart.js** - Simple yet flexible JavaScript charting
 - **React Chart.js 2** - React wrapper for Chart.js
 - **Recharts** - Composed charting library built on React components
 
 ### Development Tools
+
 - **ESLint** - Pluggable linting utility
 - **PostCSS** - Tool for transforming CSS
 - **Autoprefixer** - PostCSS plugin for vendor prefixes
@@ -47,10 +51,12 @@
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js (v16+)
 - Firebase account
 
 ### Installation
+
 ```bash
 git clone <repository-url>
 cd finance-tracker
@@ -58,14 +64,17 @@ npm install
 ```
 
 ### Setup Firebase
+
 1. Create Firebase project at [Firebase Console](https://console.firebase.google.com/)
 2. Enable Firestore Database and Authentication
 3. Add your config to `src/lib/firebase.js`
 
 ### Run Development Server
+
 ```bash
 npm run dev
 ```
+
 Open [http://localhost:5173](http://localhost:5173)
 
 ## 📖 Usage

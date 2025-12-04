@@ -1,13 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import {
-  Home,
-  BarChart3,
-  CreditCard,
-  PiggyBank,
-  FileText,
-  Settings
-} from 'lucide-react';
+import { Home, BarChart3, CreditCard, PiggyBank, FileText, Settings } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();

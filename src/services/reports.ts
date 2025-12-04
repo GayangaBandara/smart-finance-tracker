@@ -28,16 +28,16 @@ export class ReportService {
       summary,
       charts,
       insights,
-      generatedAt: new Date()
+      generatedAt: new Date(),
     };
   }
 
   static async exportToCSV(transactions: Transaction[]): Promise<void> {
     const worksheet = XLSX.utils.json_to_sheet(
-      transactions.map(t => ({
+      transactions.map((t) => ({
         ...t,
         date: format(t.date, 'yyyy-MM-dd'),
-        amount: t.type === 'expense' ? -t.amount : t.amount
+        amount: t.type === 'expense' ? -t.amount : t.amount,
       }))
     );
 
@@ -64,7 +64,7 @@ export class ReportService {
     // Add top categories
     doc.text('Top Spending Categories:', 20, 80);
     summary.topCategories.forEach((cat, index) => {
-      doc.text(`${cat.category}: $${cat.amount.toFixed(2)}`, 30, 90 + (index * 10));
+      doc.text(`${cat.category}: $${cat.amount.toFixed(2)}`, 30, 90 + index * 10);
     });
 
     // Save the PDF
@@ -73,11 +73,11 @@ export class ReportService {
 
   private static generateSummary(transactions: Transaction[]): ReportSummary {
     const totalIncome = transactions
-      .filter(t => t.type === 'income')
+      .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
 
     const totalExpenses = transactions
-      .filter(t => t.type === 'expense')
+      .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
 
     const topCategories = this.calculateTopCategories(transactions);
@@ -86,7 +86,7 @@ export class ReportService {
       totalIncome,
       totalExpenses,
       netSavings: totalIncome - totalExpenses,
-      topCategories
+      topCategories,
     };
   }
 
@@ -96,7 +96,7 @@ export class ReportService {
 
     return {
       categoryChart: categoryData,
-      timelineChart: timelineData
+      timelineChart: timelineData,
     };
   }
 
@@ -117,11 +117,14 @@ export class ReportService {
 
   private static calculateTopCategories(transactions: Transaction[]) {
     const categoryTotals = transactions
-      .filter(t => t.type === 'expense')
-      .reduce((acc, t) => {
-        acc[t.category] = (acc[t.category] || 0) + t.amount;
-        return acc;
-      }, {} as Record<string, number>);
+      .filter((t) => t.type === 'expense')
+      .reduce(
+        (acc, t) => {
+          acc[t.category] = (acc[t.category] || 0) + t.amount;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
     return Object.entries(categoryTotals)
       .map(([category, amount]) => ({ category, amount }))
@@ -131,18 +134,24 @@ export class ReportService {
 
   private static calculateCategoryTotals(transactions: Transaction[]) {
     return transactions
-      .filter(t => t.type === 'expense')
-      .reduce((acc, t) => {
-        acc[t.category] = (acc[t.category] || 0) + t.amount;
-        return acc;
-      }, {} as Record<string, number>);
+      .filter((t) => t.type === 'expense')
+      .reduce(
+        (acc, t) => {
+          acc[t.category] = (acc[t.category] || 0) + t.amount;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
   }
 
   private static calculateTimelineTotals(transactions: Transaction[]) {
-    return transactions.reduce((acc, t) => {
-      const date = format(t.date, 'yyyy-MM-dd');
-      acc[date] = (acc[date] || 0) + (t.type === 'expense' ? -t.amount : t.amount);
-      return acc;
-    }, {} as Record<string, number>);
+    return transactions.reduce(
+      (acc, t) => {
+        const date = format(t.date, 'yyyy-MM-dd');
+        acc[date] = (acc[date] || 0) + (t.type === 'expense' ? -t.amount : t.amount);
+        return acc;
+      },
+      {} as Record<string, number>
+    );
   }
 }

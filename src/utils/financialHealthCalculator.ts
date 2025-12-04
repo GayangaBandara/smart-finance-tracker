@@ -19,9 +19,9 @@ export class FinancialHealthCalculator {
     const savingsScore = this.calculateSavingsScore(userData);
     const budgetScore = this.calculateBudgetAdherenceScore(userData);
     const debtScore = this.calculateDebtManagementScore(userData);
-    
+
     const overallScore = (savingsScore + budgetScore + debtScore) / 3;
-    
+
     return {
       savingsScore,
       budgetAdherenceScore: budgetScore,
@@ -31,14 +31,14 @@ export class FinancialHealthCalculator {
         savingsScore,
         budgetScore,
         debtScore,
-        userData
-      })
+        userData,
+      }),
     };
   }
 
   private static calculateSavingsScore(userData: UserData): number {
     const savingsRate = (userData.savings / userData.income) * 100;
-    
+
     if (savingsRate >= 20) return 100;
     if (savingsRate >= 15) return 80;
     if (savingsRate >= 10) return 60;
@@ -47,9 +47,9 @@ export class FinancialHealthCalculator {
   }
 
   private static calculateBudgetAdherenceScore(userData: UserData): number {
-    const adherenceScores = userData.budgets.map(budget => {
+    const adherenceScores = userData.budgets.map((budget) => {
       const difference = Math.abs(budget.planned - budget.actual);
-      const adherenceRate = 100 - ((difference / budget.planned) * 100);
+      const adherenceRate = 100 - (difference / budget.planned) * 100;
       return Math.max(0, Math.min(100, adherenceRate));
     });
 
@@ -58,7 +58,7 @@ export class FinancialHealthCalculator {
 
   private static calculateDebtManagementScore(userData: UserData): number {
     const debtToIncomeRatio = (userData.debt / userData.income) * 100;
-    
+
     if (debtToIncomeRatio <= 15) return 100;
     if (debtToIncomeRatio <= 30) return 80;
     if (debtToIncomeRatio <= 45) return 60;
@@ -66,11 +66,11 @@ export class FinancialHealthCalculator {
     return 20;
   }
 
-  private static generateRecommendations({ 
-    savingsScore, 
-    budgetScore, 
-    debtScore, 
-    userData 
+  private static generateRecommendations({
+    savingsScore,
+    budgetScore,
+    debtScore,
+    userData,
   }: {
     savingsScore: number;
     budgetScore: number;
@@ -99,7 +99,9 @@ export class FinancialHealthCalculator {
 
     // General recommendations
     if (userData.expenses > userData.income * 0.9) {
-      recommendations.push('Your expenses are very close to your income. Look for ways to reduce spending.');
+      recommendations.push(
+        'Your expenses are very close to your income. Look for ways to reduce spending.'
+      );
     }
 
     return recommendations;

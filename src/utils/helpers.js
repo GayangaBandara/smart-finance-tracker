@@ -4,7 +4,7 @@ export const formatDate = (date, options = {}) => {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-    ...options
+    ...options,
   };
 
   if (typeof date === 'string') {
@@ -24,7 +24,7 @@ export const formatDateTime = (date) => {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 };
 
@@ -34,7 +34,7 @@ export const formatCurrency = (amount, currency = 'USD', decimals = 2) => {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
+    maximumFractionDigits: decimals,
   }).format(amount);
 };
 
@@ -50,7 +50,7 @@ export const formatAmount = (amount, showSign = false) => {
 export const formatNumber = (number, decimals = 2) => {
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
+    maximumFractionDigits: decimals,
   }).format(number);
 };
 
@@ -138,7 +138,7 @@ export const getStatusColor = (status) => {
     warning: 'text-yellow-600',
     over: 'text-red-600',
     income: 'text-green-600',
-    expense: 'text-red-600'
+    expense: 'text-red-600',
   };
   return colors[status] || 'text-gray-600';
 };
@@ -182,7 +182,7 @@ export const storage = {
     } catch (error) {
       console.error('Error clearing localStorage:', error);
     }
-  }
+  },
 };
 
 // Debounce helper
@@ -208,16 +208,18 @@ export const exportToCSV = (data, filename) => {
   const headers = Object.keys(data[0] || {});
   const csvContent = [
     headers.join(','),
-    ...data.map(row =>
-      headers.map(header => {
-        const value = row[header];
-        // Escape commas and quotes in CSV
-        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-          return `"${value.replace(/"/g, '""')}"`;
-        }
-        return value;
-      }).join(',')
-    )
+    ...data.map((row) =>
+      headers
+        .map((header) => {
+          const value = row[header];
+          // Escape commas and quotes in CSV
+          if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return value;
+        })
+        .join(',')
+    ),
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

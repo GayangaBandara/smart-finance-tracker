@@ -10,7 +10,10 @@ import Button from '../components/common/Button';
 // Validation schema
 const schema = yup.object({
   email: yup.string().email('Invalid email address').required('Email is required'),
-  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+  password: yup
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
 });
 
 const Login = () => {
@@ -50,10 +53,7 @@ const Login = () => {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <Link
-              to="/register"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
+            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
               create a new account
             </Link>
           </p>
@@ -85,20 +85,13 @@ const Login = () => {
           )}
 
           <div>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign in'}
             </Button>
           </div>
 
           <div className="text-center">
-            <Link
-              to="/forgot-password"
-              className="text-sm text-indigo-600 hover:text-indigo-500"
-            >
+            <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-500">
               Forgot your password?
             </Link>
           </div>

@@ -6,7 +6,8 @@ interface ApiResponse<T> {
 }
 
 export class ApiService {
-  private static readonly BASE_URL = process.env.VITE_API_URL || '';
+  private static readonly BASE_URL =
+    (globalThis.process?.env?.VITE_API_URL as string | undefined) || '';
   private static readonly DEFAULT_HEADERS = {
     'Content-Type': 'application/json',
   };
@@ -113,18 +114,9 @@ export class ApiService {
     }
 
     if (error instanceof Error) {
-      return new AppError(
-        error.message,
-        ErrorCodes.INVALID_OPERATION,
-        500,
-        error.stack
-      );
+      return new AppError(error.message, ErrorCodes.INVALID_OPERATION, 500, error.stack);
     }
 
-    return new AppError(
-      'An unexpected error occurred',
-      ErrorCodes.INVALID_OPERATION,
-      500
-    );
+    return new AppError('An unexpected error occurred', ErrorCodes.INVALID_OPERATION, 500);
   }
 }

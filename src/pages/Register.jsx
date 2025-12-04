@@ -10,8 +10,12 @@ import Button from '../components/common/Button';
 // Validation schema
 const schema = yup.object({
   email: yup.string().email('Invalid email address').required('Email is required'),
-  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-  confirmPassword: yup.string()
+  password: yup
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+  confirmPassword: yup
+    .string()
     .oneOf([yup.ref('password'), null], 'Passwords must match')
     .required('Confirm password is required'),
 });
@@ -50,10 +54,7 @@ const Register = () => {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <Link
-              to="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
+            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
               sign in to existing account
             </Link>
           </p>
@@ -93,11 +94,7 @@ const Register = () => {
           )}
 
           <div>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Creating account...' : 'Create account'}
             </Button>
           </div>

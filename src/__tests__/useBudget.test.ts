@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest';
 
 describe('useBudget Hook', () => {
   it('should initialize properly', () => {
@@ -6,10 +6,10 @@ describe('useBudget Hook', () => {
     const initialState = {
       loading: false,
       error: null,
-    }
-    expect(initialState.loading).toBe(false)
-    expect(initialState.error).toBe(null)
-  })
+    };
+    expect(initialState.loading).toBe(false);
+    expect(initialState.error).toBe(null);
+  });
 
   it('should handle budget creation', () => {
     // Mock test for budget creation
@@ -17,10 +17,10 @@ describe('useBudget Hook', () => {
       category: 'Food',
       amount: 500,
       period: 'monthly' as const,
-    }
-    expect(budgetData.amount).toBeGreaterThan(0)
-    expect(budgetData.category).toBeDefined()
-  })
+    };
+    expect(budgetData.amount).toBeGreaterThan(0);
+    expect(budgetData.category).toBeDefined();
+  });
 
   it('should handle budget updates', () => {
     // Mock test for budget updates
@@ -29,15 +29,15 @@ describe('useBudget Hook', () => {
       category: 'Transportation',
       amount: 200,
       period: 'monthly' as const,
-    }
-    expect(budgetData.id).toBeDefined()
-    expect(budgetData.amount).toBeGreaterThan(0)
-  })
+    };
+    expect(budgetData.id).toBeDefined();
+    expect(budgetData.amount).toBeGreaterThan(0);
+  });
 
   it('should handle errors gracefully', () => {
     // Mock test for error handling
-    const errorMessage = 'Budget operation failed'
-    expect(errorMessage).toBeTruthy()
-    expect(errorMessage.length).toBeGreaterThan(0)
-  })
-})
+    const errorMessage = 'Budget operation failed';
+    expect(errorMessage).toBeTruthy();
+    expect(errorMessage.length).toBeGreaterThan(0);
+  });
+});

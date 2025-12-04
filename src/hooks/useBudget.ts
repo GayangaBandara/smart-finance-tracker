@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import type { BudgetData } from '../context/FinanceContext.d.ts';
 
-
 export const useBudget = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

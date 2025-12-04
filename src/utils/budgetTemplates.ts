@@ -8,7 +8,7 @@ export const BUDGET_CATEGORIES = [
   { id: 'education', label: 'Education', icon: '📚', defaultPercentage: 10 },
   { id: 'travel', label: 'Travel', icon: '✈️', defaultPercentage: 5 },
   { id: 'investments', label: 'Investments', icon: '📈', defaultPercentage: 15 },
-  { id: 'other', label: 'Other', icon: '📌', defaultPercentage: 5 }
+  { id: 'other', label: 'Other', icon: '📌', defaultPercentage: 5 },
 ];
 
 export const BUDGET_TEMPLATES = {
@@ -19,8 +19,8 @@ export const BUDGET_TEMPLATES = {
       education: { percentage: 40, priority: 'high' },
       food: { percentage: 30, priority: 'high' },
       transport: { percentage: 15, priority: 'medium' },
-      entertainment: { percentage: 15, priority: 'low' }
-    }
+      entertainment: { percentage: 15, priority: 'low' },
+    },
   },
   professional: {
     name: 'Professional Budget',
@@ -32,8 +32,8 @@ export const BUDGET_TEMPLATES = {
       savings: { percentage: 20, priority: 'high' },
       entertainment: { percentage: 10, priority: 'low' },
       health: { percentage: 10, priority: 'medium' },
-      other: { percentage: 5, priority: 'low' }
-    }
+      other: { percentage: 5, priority: 'low' },
+    },
   },
   familyBudget: {
     name: 'Family Budget',
@@ -45,8 +45,8 @@ export const BUDGET_TEMPLATES = {
       transport: { percentage: 10, priority: 'medium' },
       health: { percentage: 10, priority: 'high' },
       entertainment: { percentage: 5, priority: 'low' },
-      savings: { percentage: 5, priority: 'medium' }
-    }
+      savings: { percentage: 5, priority: 'medium' },
+    },
   },
   savings: {
     name: 'Savings-Focused Budget',
@@ -56,20 +56,23 @@ export const BUDGET_TEMPLATES = {
       housing: { percentage: 25, priority: 'high' },
       food: { percentage: 15, priority: 'medium' },
       transport: { percentage: 10, priority: 'medium' },
-      other: { percentage: 10, priority: 'low' }
-    }
-  }
+      other: { percentage: 10, priority: 'low' },
+    },
+  },
 };
 
 export const calculateRecommendedBudget = (monthlyIncome: number, template = 'professional') => {
   const selectedTemplate = BUDGET_TEMPLATES[template as keyof typeof BUDGET_TEMPLATES];
-  
+
   if (!selectedTemplate) {
     throw new Error('Invalid budget template');
   }
 
-  return Object.entries(selectedTemplate.categories).reduce((acc, [category, { percentage }]) => {
-    acc[category] = (monthlyIncome * percentage) / 100;
-    return acc;
-  }, {} as Record<string, number>);
+  return Object.entries(selectedTemplate.categories).reduce(
+    (acc, [category, { percentage }]) => {
+      acc[category] = (monthlyIncome * percentage) / 100;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 };

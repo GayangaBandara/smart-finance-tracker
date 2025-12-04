@@ -12,12 +12,13 @@ const TransactionList = () => {
   const [editingTransaction, setEditingTransaction] = useState(null);
 
   // Get unique categories
-  const categories = [...new Set(transactions.map(t => t.category))];
+  const categories = [...new Set(transactions.map((t) => t.category))];
 
   // Filter transactions
-  const filteredTransactions = transactions.filter(transaction => {
-    const matchesSearch = transaction.note?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         transaction.category?.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredTransactions = transactions.filter((transaction) => {
+    const matchesSearch =
+      transaction.note?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transaction.category?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !filterCategory || transaction.category === filterCategory;
     const matchesType = !filterType || transaction.type === filterType;
 
@@ -76,8 +77,10 @@ const TransactionList = () => {
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">All Categories</option>
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
             ))}
           </select>
 
@@ -100,7 +103,7 @@ const TransactionList = () => {
             <p className="text-gray-500">No transactions found.</p>
           </div>
         ) : (
-          filteredTransactions.map(transaction => (
+          filteredTransactions.map((transaction) => (
             <div
               key={transaction.id}
               className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"

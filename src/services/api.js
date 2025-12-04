@@ -159,7 +159,7 @@ export const reportsAPI = {
   export: async (params = {}) => {
     const response = await api.get(endpoints.reports.export, {
       params,
-      responseType: 'blob'
+      responseType: 'blob',
     });
     return response.data;
   },

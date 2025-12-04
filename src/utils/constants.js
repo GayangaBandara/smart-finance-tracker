@@ -11,30 +11,22 @@ export const TRANSACTION_CATEGORIES = {
     'Travel',
     'Rent',
     'Insurance',
-    'Other'
+    'Other',
   ],
-  INCOME: [
-    'Salary',
-    'Freelance',
-    'Investment',
-    'Business',
-    'Gift',
-    'Refund',
-    'Other'
-  ]
+  INCOME: ['Salary', 'Freelance', 'Investment', 'Business', 'Gift', 'Refund', 'Other'],
 };
 
 // Transaction types
 export const TRANSACTION_TYPES = {
   INCOME: 'income',
-  EXPENSE: 'expense'
+  EXPENSE: 'expense',
 };
 
 // Budget periods
 export const BUDGET_PERIODS = {
   WEEKLY: 'weekly',
   MONTHLY: 'monthly',
-  YEARLY: 'yearly'
+  YEARLY: 'yearly',
 };
 
 // Date ranges for reports
@@ -43,7 +35,7 @@ export const DATE_RANGES = {
   MONTH: 'month',
   QUARTER: 'quarter',
   YEAR: 'year',
-  CUSTOM: 'custom'
+  CUSTOM: 'custom',
 };
 
 // Chart colors
@@ -57,7 +49,7 @@ export const CHART_COLORS = [
   '#C9CBCF',
   '#FF6384',
   '#36A2EB',
-  '#FFCE56'
+  '#FFCE56',
 ];
 
 // Status messages
@@ -65,7 +57,7 @@ export const STATUS_MESSAGES = {
   LOADING: 'Loading...',
   ERROR: 'An error occurred',
   SUCCESS: 'Operation completed successfully',
-  NO_DATA: 'No data available'
+  NO_DATA: 'No data available',
 };
 
 // Validation rules
@@ -73,7 +65,7 @@ export const VALIDATION_RULES = {
   PASSWORD_MIN_LENGTH: 6,
   DISPLAY_NAME_MIN_LENGTH: 2,
   AMOUNT_MIN: 0.01,
-  NOTE_MAX_LENGTH: 500
+  NOTE_MAX_LENGTH: 500,
 };
 
 // API endpoints (for future use)
@@ -82,18 +74,18 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
-    LOGOUT: '/auth/logout'
+    LOGOUT: '/auth/logout',
   },
   TRANSACTIONS: '/transactions',
   BUDGETS: '/budgets',
-  REPORTS: '/reports'
+  REPORTS: '/reports',
 };
 
 // Local storage keys
 export const STORAGE_KEYS = {
   AUTH_TOKEN: 'authToken',
   USER_PREFERENCES: 'userPreferences',
-  THEME: 'theme'
+  THEME: 'theme',
 };
 
 // Default values
@@ -101,7 +93,7 @@ export const DEFAULTS = {
   CURRENCY: 'USD',
   DATE_FORMAT: 'MM/DD/YYYY',
   ITEMS_PER_PAGE: 10,
-  DECIMAL_PLACES: 2
+  DECIMAL_PLACES: 2,
 };
 
 // Error messages
@@ -110,7 +102,7 @@ export const ERROR_MESSAGES = {
   UNAUTHORIZED: 'You are not authorized to perform this action.',
   NOT_FOUND: 'The requested resource was not found.',
   VALIDATION_ERROR: 'Please check your input and try again.',
-  SERVER_ERROR: 'Server error. Please try again later.'
+  SERVER_ERROR: 'Server error. Please try again later.',
 };
 
 // Success messages
@@ -120,5 +112,5 @@ export const SUCCESS_MESSAGES = {
   TRANSACTION_DELETED: 'Transaction deleted successfully',
   BUDGET_CREATED: 'Budget created successfully',
   BUDGET_UPDATED: 'Budget updated successfully',
-  BUDGET_DELETED: 'Budget deleted successfully'
+  BUDGET_DELETED: 'Budget deleted successfully',
 };

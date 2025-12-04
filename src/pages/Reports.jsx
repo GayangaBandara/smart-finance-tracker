@@ -4,7 +4,16 @@ import { Download, Calendar, TrendingUp, TrendingDown, FileText, File } from 'lu
 import Button from '../components/common/Button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, AlignmentType } from 'docx';
+import {
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  AlignmentType,
+} from 'docx';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -57,17 +66,17 @@ const Reports = () => {
         startDate.setMonth(now.getMonth() - 1);
     }
 
-    return transactions.filter(t => new Date(t.date) >= startDate);
+    return transactions.filter((t) => new Date(t.date) >= startDate);
   }, [transactions, dateRange]);
 
   // Calculate summary statistics
   const summary = useMemo(() => {
     const income = filteredTransactions
-      .filter(t => t.type === 'income')
+      .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
 
     const expenses = filteredTransactions
-      .filter(t => t.type === 'expense')
+      .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
 
     const netIncome = income - expenses;
@@ -96,10 +105,10 @@ const Reports = () => {
   const monthlyTrend = useMemo(() => {
     const monthlyData = {};
 
-    filteredTransactions.forEach(t => {
+    filteredTransactions.forEach((t) => {
       const month = new Date(t.date).toLocaleDateString('en-US', {
         year: 'numeric',
-        month: 'short'
+        month: 'short',
       });
 
       if (!monthlyData[month]) {
@@ -119,29 +128,37 @@ const Reports = () => {
 
   // Chart data
   const pieChartData = {
-    labels: categoryBreakdown.map(item => item.category),
-    datasets: [{
-      data: categoryBreakdown.map(item => item.expense),
-      backgroundColor: [
-        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-        '#9966FF', '#FF9F40', '#C9CBCF', '#FF6384'
-      ],
-    }],
+    labels: categoryBreakdown.map((item) => item.category),
+    datasets: [
+      {
+        data: categoryBreakdown.map((item) => item.expense),
+        backgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+          '#C9CBCF',
+          '#FF6384',
+        ],
+      },
+    ],
   };
 
   const lineChartData = {
-    labels: monthlyTrend.map(item => item.month),
+    labels: monthlyTrend.map((item) => item.month),
     datasets: [
       {
         label: 'Income',
-        data: monthlyTrend.map(item => item.income),
+        data: monthlyTrend.map((item) => item.income),
         borderColor: 'rgb(34, 197, 94)',
         backgroundColor: 'rgba(34, 197, 94, 0.1)',
         tension: 0.1,
       },
       {
         label: 'Expenses',
-        data: monthlyTrend.map(item => item.expense),
+        data: monthlyTrend.map((item) => item.expense),
         borderColor: 'rgb(239, 68, 68)',
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
         tension: 0.1,
@@ -150,16 +167,16 @@ const Reports = () => {
   };
 
   const barChartData = {
-    labels: categoryBreakdown.map(item => item.category),
+    labels: categoryBreakdown.map((item) => item.category),
     datasets: [
       {
         label: 'Income',
-        data: categoryBreakdown.map(item => item.income),
+        data: categoryBreakdown.map((item) => item.income),
         backgroundColor: 'rgba(34, 197, 94, 0.8)',
       },
       {
         label: 'Expenses',
-        data: categoryBreakdown.map(item => item.expense),
+        data: categoryBreakdown.map((item) => item.expense),
         backgroundColor: 'rgba(239, 68, 68, 0.8)',
       },
     ],
@@ -176,7 +193,7 @@ const Reports = () => {
 
     if (format === 'json') {
       const blob = new Blob([JSON.stringify(reportData, null, 2)], {
-        type: 'application/json'
+        type: 'application/json',
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -233,133 +250,138 @@ const Reports = () => {
   const exportToWord = async () => {
     try {
       const doc = new Document({
-        sections: [{
-          properties: {},
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Financial Report",
-                  bold: true,
-                  size: 32,
-                }),
-              ],
-              alignment: AlignmentType.CENTER,
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `Generated on: ${new Date().toLocaleDateString()}`,
-                  size: 20,
-                }),
-              ],
-              alignment: AlignmentType.CENTER,
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `Period: ${dateRange}`,
-                  size: 20,
-                }),
-              ],
-              alignment: AlignmentType.CENTER,
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "",
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Summary",
-                  bold: true,
-                  size: 24,
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `Total Income: $${summary.income.toFixed(2)}`,
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `Total Expenses: $${summary.expenses.toFixed(2)}`,
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `Net Income: $${summary.netIncome.toFixed(2)}`,
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "",
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Category Breakdown",
-                  bold: true,
-                  size: 24,
-                }),
-              ],
-            }),
-            new Table({
-              rows: [
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph("Category")],
-                    }),
-                    new TableCell({
-                      children: [new Paragraph("Income")],
-                    }),
-                    new TableCell({
-                      children: [new Paragraph("Expenses")],
-                    }),
-                    new TableCell({
-                      children: [new Paragraph("Net")],
-                    }),
-                  ],
-                }),
-                ...categoryBreakdown.map(cat => new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph(cat.category)],
-                    }),
-                    new TableCell({
-                      children: [new Paragraph(`$${cat.income.toFixed(2)}`)],
-                    }),
-                    new TableCell({
-                      children: [new Paragraph(`$${cat.expense.toFixed(2)}`)],
-                    }),
-                    new TableCell({
-                      children: [new Paragraph(`$${cat.net.toFixed(2)}`)],
-                    }),
-                  ],
-                })),
-              ],
-            }),
-          ],
-        }],
+        sections: [
+          {
+            properties: {},
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: 'Financial Report',
+                    bold: true,
+                    size: 32,
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Generated on: ${new Date().toLocaleDateString()}`,
+                    size: 20,
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Period: ${dateRange}`,
+                    size: 20,
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: '',
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: 'Summary',
+                    bold: true,
+                    size: 24,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Total Income: $${summary.income.toFixed(2)}`,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Total Expenses: $${summary.expenses.toFixed(2)}`,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Net Income: $${summary.netIncome.toFixed(2)}`,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: '',
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: 'Category Breakdown',
+                    bold: true,
+                    size: 24,
+                  }),
+                ],
+              }),
+              new Table({
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph('Category')],
+                      }),
+                      new TableCell({
+                        children: [new Paragraph('Income')],
+                      }),
+                      new TableCell({
+                        children: [new Paragraph('Expenses')],
+                      }),
+                      new TableCell({
+                        children: [new Paragraph('Net')],
+                      }),
+                    ],
+                  }),
+                  ...categoryBreakdown.map(
+                    (cat) =>
+                      new TableRow({
+                        children: [
+                          new TableCell({
+                            children: [new Paragraph(cat.category)],
+                          }),
+                          new TableCell({
+                            children: [new Paragraph(`$${cat.income.toFixed(2)}`)],
+                          }),
+                          new TableCell({
+                            children: [new Paragraph(`$${cat.expense.toFixed(2)}`)],
+                          }),
+                          new TableCell({
+                            children: [new Paragraph(`$${cat.net.toFixed(2)}`)],
+                          }),
+                        ],
+                      })
+                  ),
+                ],
+              }),
+            ],
+          },
+        ],
       });
 
       const buffer = await Packer.toBuffer(doc);
       const blob = new Blob([buffer], {
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -429,7 +451,11 @@ const Reports = () => {
               <File size={16} />
               <span>Export Word</span>
             </Button>
-            <Button onClick={() => exportReport('json')} variant="outline" className="flex items-center space-x-2">
+            <Button
+              onClick={() => exportReport('json')}
+              variant="outline"
+              className="flex items-center space-x-2"
+            >
               <Download size={16} />
               <span>Export JSON</span>
             </Button>
@@ -463,14 +489,17 @@ const Reports = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Net Income</p>
-              <p className={`text-2xl font-bold ${summary.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <p
+                className={`text-2xl font-bold ${summary.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
                 ${summary.netIncome.toFixed(2)}
               </p>
             </div>
-            {summary.netIncome >= 0 ?
-              <TrendingUp className="w-8 h-8 text-green-500" /> :
+            {summary.netIncome >= 0 ? (
+              <TrendingUp className="w-8 h-8 text-green-500" />
+            ) : (
               <TrendingDown className="w-8 h-8 text-red-500" />
-            }
+            )}
           </div>
         </div>
       </div>
@@ -497,10 +526,9 @@ const Reports = () => {
       <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200 mb-8">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Budget Analysis</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {budgets.map(budget => {
-            const categoryTransactions = filteredTransactions.filter(t => 
-              t.category === budget.category && 
-              t.type === 'expense'
+          {budgets.map((budget) => {
+            const categoryTransactions = filteredTransactions.filter(
+              (t) => t.category === budget.category && t.type === 'expense'
             );
             const spentAmount = categoryTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
             const remainingAmount = Number(budget.amount) - spentAmount;
@@ -523,7 +551,9 @@ const Reports = () => {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Remaining:</span>
-                    <span className={`font-medium ${remainingAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <span
+                      className={`font-medium ${remainingAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    >
                       ${Math.abs(remainingAmount).toFixed(2)}
                       {remainingAmount < 0 ? ' (Over Budget)' : ''}
                     </span>
@@ -536,9 +566,11 @@ const Reports = () => {
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                       <div
                         className={`h-2.5 rounded-full ${
-                          percentage > 90 ? 'bg-red-600' :
-                          percentage > 70 ? 'bg-yellow-500' :
-                          'bg-green-600'
+                          percentage > 90
+                            ? 'bg-red-600'
+                            : percentage > 70
+                              ? 'bg-yellow-500'
+                              : 'bg-green-600'
                         }`}
                         style={{ width: `${Math.min(percentage, 100)}%` }}
                       ></div>
@@ -570,7 +602,9 @@ const Reports = () => {
                   <td className="py-3 px-4 font-medium">{item.category}</td>
                   <td className="py-3 px-4 text-right text-green-600">${item.income.toFixed(2)}</td>
                   <td className="py-3 px-4 text-right text-red-600">${item.expense.toFixed(2)}</td>
-                  <td className={`py-3 px-4 text-right font-semibold ${item.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <td
+                    className={`py-3 px-4 text-right font-semibold ${item.net >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
                     ${item.net.toFixed(2)}
                   </td>
                 </tr>

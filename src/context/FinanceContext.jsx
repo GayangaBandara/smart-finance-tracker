@@ -39,14 +39,14 @@ const financeReducer = (state, action) => {
     case ACTIONS.UPDATE_TRANSACTION:
       return {
         ...state,
-        transactions: state.transactions.map(t =>
+        transactions: state.transactions.map((t) =>
           t.id === action.payload.id ? action.payload : t
         ),
       };
     case ACTIONS.DELETE_TRANSACTION:
       return {
         ...state,
-        transactions: state.transactions.filter(t => t.id !== action.payload),
+        transactions: state.transactions.filter((t) => t.id !== action.payload),
       };
     case ACTIONS.SET_BUDGETS:
       return { ...state, budgets: action.payload };
@@ -55,14 +55,12 @@ const financeReducer = (state, action) => {
     case ACTIONS.UPDATE_BUDGET:
       return {
         ...state,
-        budgets: state.budgets.map(b =>
-          b.id === action.payload.id ? action.payload : b
-        ),
+        budgets: state.budgets.map((b) => (b.id === action.payload.id ? action.payload : b)),
       };
     case ACTIONS.DELETE_BUDGET:
       return {
         ...state,
-        budgets: state.budgets.filter(b => b.id !== action.payload),
+        budgets: state.budgets.filter((b) => b.id !== action.payload),
       };
     case ACTIONS.SET_ERROR:
       return { ...state, error: action.payload };
@@ -83,21 +81,27 @@ export const FinanceProvider = ({ children }) => {
 
   const handleFetchError = useCallback((error, source) => {
     console.error(`Error fetching ${source}:`, error);
-    
+
     // Handle specific Firebase errors
     if (error.code === 'permission-denied') {
-      dispatch({ type: ACTIONS.SET_ERROR, payload: 'You do not have permission to access this data. Please log out and log in again.' });
+      dispatch({
+        type: ACTIONS.SET_ERROR,
+        payload: 'You do not have permission to access this data. Please log out and log in again.',
+      });
       return;
     }
-    
+
     if (error.code === 'failed-precondition') {
-      dispatch({ type: ACTIONS.SET_ERROR, payload: 'Unable to load data. Please check your connection and try again.' });
+      dispatch({
+        type: ACTIONS.SET_ERROR,
+        payload: 'Unable to load data. Please check your connection and try again.',
+      });
       return;
     }
-    
-    dispatch({ 
-      type: ACTIONS.SET_ERROR, 
-      payload: `Unable to load ${source}. Please check your connection and try again.`
+
+    dispatch({
+      type: ACTIONS.SET_ERROR,
+      payload: `Unable to load ${source}. Please check your connection and try again.`,
     });
   }, []);
 
@@ -138,18 +142,18 @@ export const FinanceProvider = ({ children }) => {
       unsubscribeTransactions = onSnapshot(transactionsQuery, {
         next: (snapshot) => {
           if (!isMounted) return;
-          const transactions = snapshot.docs.map(doc => ({
+          const transactions = snapshot.docs.map((doc) => ({
             ...doc.data(),
             id: doc.id,
             amount: Number(doc.data().amount),
-            createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt)
+            createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt),
           }));
           dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactions });
         },
         error: (error) => {
           console.error('Transactions listener error:', error);
           if (isMounted) handleFetchError(error, 'transactions');
-        }
+        },
       });
 
       // Budgets listener
@@ -162,20 +166,22 @@ export const FinanceProvider = ({ children }) => {
       unsubscribeBudgets = onSnapshot(budgetsQuery, {
         next: (snapshot) => {
           if (!isMounted) return;
-          const budgets = snapshot.docs.map(doc => ({
-            ...doc.data(),
-            id: doc.id,
-            amount: Number(doc.data().amount),
-            createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt),
-            updatedAt: doc.data().updatedAt?.toDate?.() || new Date(doc.data().updatedAt)
-          })).filter(budget => budget.category && !isNaN(budget.amount));
+          const budgets = snapshot.docs
+            .map((doc) => ({
+              ...doc.data(),
+              id: doc.id,
+              amount: Number(doc.data().amount),
+              createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt),
+              updatedAt: doc.data().updatedAt?.toDate?.() || new Date(doc.data().updatedAt),
+            }))
+            .filter((budget) => budget.category && !isNaN(budget.amount));
           dispatch({ type: ACTIONS.SET_BUDGETS, payload: budgets });
           dispatch({ type: ACTIONS.SET_ERROR, payload: null });
         },
         error: (error) => {
           console.error('Budgets listener error:', error);
           if (isMounted) handleFetchError(error, 'budgets');
-        }
+        },
       });
 
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
@@ -193,7 +199,8 @@ export const FinanceProvider = ({ children }) => {
 
   // Action creators
   const setLoading = (loading) => dispatch({ type: ACTIONS.SET_LOADING, payload: loading });
-  const setTransactions = (transactions) => dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactions });
+  const setTransactions = (transactions) =>
+    dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactions });
   const addTransaction = async (transaction) => {
     try {
       if (!user) {
@@ -205,7 +212,7 @@ export const FinanceProvider = ({ children }) => {
       }
 
       const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
-      
+
       console.log('Adding transaction:', transaction);
       console.log('Current user:', user);
       console.log('User ID:', user.uid);
@@ -227,7 +234,7 @@ export const FinanceProvider = ({ children }) => {
         uid: user.uid,
         createdAt: serverTimestamp(),
         amount: Number(transaction.amount),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
 
       console.log('Preparing to save transaction data:', transactionData);
@@ -241,9 +248,9 @@ export const FinanceProvider = ({ children }) => {
         ...transactionData,
         id: docRef.id,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      
+
       dispatch({ type: ACTIONS.ADD_TRANSACTION, payload: newTransaction });
       console.log('Local state updated with new transaction');
 
@@ -266,7 +273,7 @@ export const FinanceProvider = ({ children }) => {
       }
 
       const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
-      
+
       // Validate transaction data
       if (!transaction.amount || isNaN(transaction.amount)) {
         throw new Error('Invalid amount');
@@ -283,7 +290,7 @@ export const FinanceProvider = ({ children }) => {
         ...transaction,
         uid: user.uid,
         amount: Number(transaction.amount),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
 
       console.log('Updating transaction with ID:', transaction.id);
@@ -291,22 +298,25 @@ export const FinanceProvider = ({ children }) => {
 
       // Update in Firestore
       await updateDoc(doc(db, 'transactions', transaction.id), updateData);
-      
+
       // Update local state with the new data
       const updatedTransaction = {
         ...updateData,
         id: transaction.id,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       dispatch({ type: ACTIONS.UPDATE_TRANSACTION, payload: updatedTransaction });
       console.log('Transaction updated successfully');
-      
+
       return updatedTransaction;
     } catch (error) {
       console.error('Error updating transaction:', error);
       console.error('Error details:', error.message);
-      dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to update transaction: ${error.message}` });
+      dispatch({
+        type: ACTIONS.SET_ERROR,
+        payload: `Failed to update transaction: ${error.message}`,
+      });
       throw error;
     }
   };
@@ -317,11 +327,11 @@ export const FinanceProvider = ({ children }) => {
       }
 
       const { deleteDoc, doc, getDoc } = await import('firebase/firestore');
-      
+
       // First, get the document to verify ownership
       const transactionRef = doc(db, 'transactions', id);
       const transactionDoc = await getDoc(transactionRef);
-      
+
       if (!transactionDoc.exists()) {
         throw new Error('Transaction not found');
       }
@@ -333,21 +343,25 @@ export const FinanceProvider = ({ children }) => {
 
       console.log('Deleting transaction with ID:', id);
       await deleteDoc(transactionRef);
-      
+
       // Update local state
       dispatch({ type: ACTIONS.DELETE_TRANSACTION, payload: id });
       console.log('Transaction deleted successfully');
     } catch (error) {
       console.error('Error deleting transaction:', error);
-      const errorMessage = error.code === 'permission-denied' 
-        ? 'You do not have permission to delete this transaction' 
-        : error.message;
-      dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to delete transaction: ${errorMessage}` });
+      const errorMessage =
+        error.code === 'permission-denied'
+          ? 'You do not have permission to delete this transaction'
+          : error.message;
+      dispatch({
+        type: ACTIONS.SET_ERROR,
+        payload: `Failed to delete transaction: ${errorMessage}`,
+      });
       throw error;
     }
   };
   const setBudgets = (budgets) => dispatch({ type: ACTIONS.SET_BUDGETS, payload: budgets });
-  
+
   const addBudget = async (budget) => {
     try {
       if (!user || !user.uid) {
@@ -356,7 +370,7 @@ export const FinanceProvider = ({ children }) => {
 
       const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
       console.log('Adding budget:', budget);
-      
+
       // Prepare budget data
       const budgetData = {
         ...budget,
@@ -370,7 +384,7 @@ export const FinanceProvider = ({ children }) => {
       };
 
       console.log('Prepared budget data:', budgetData);
-      
+
       const docRef = await addDoc(collection(db, 'budgets'), budgetData);
       console.log('Budget added with ID:', docRef.id);
 
@@ -380,7 +394,7 @@ export const FinanceProvider = ({ children }) => {
         id: docRef.id,
         amount: Number(budgetData.amount), // Ensure amount is a number
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       // Update local state immediately
@@ -407,13 +421,13 @@ export const FinanceProvider = ({ children }) => {
       }
 
       const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
-      
+
       // Prepare update data
       const updateData = {
         ...budget,
         uid: user.uid,
         amount: Number(budget.amount),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
 
       console.log('Updating budget with ID:', budget.id);
@@ -421,14 +435,14 @@ export const FinanceProvider = ({ children }) => {
 
       // Update in Firestore
       await updateDoc(doc(db, 'budgets', budget.id), updateData);
-      
+
       // Update local state with the new data
       const updatedBudget = {
         ...updateData,
         id: budget.id,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      
+
       dispatch({ type: ACTIONS.UPDATE_BUDGET, payload: updatedBudget });
       console.log('Budget updated successfully:', updatedBudget);
 
@@ -448,11 +462,11 @@ export const FinanceProvider = ({ children }) => {
       }
 
       const { doc, deleteDoc, getDoc } = await import('firebase/firestore');
-      
+
       // First, get the document to verify ownership
       const budgetRef = doc(db, 'budgets', id);
       const budgetDoc = await getDoc(budgetRef);
-      
+
       if (!budgetDoc.exists()) {
         throw new Error('Budget not found');
       }
@@ -464,15 +478,16 @@ export const FinanceProvider = ({ children }) => {
 
       console.log('Deleting budget with ID:', id);
       await deleteDoc(budgetRef);
-      
+
       // Update local state
       dispatch({ type: ACTIONS.DELETE_BUDGET, payload: id });
       console.log('Budget deleted successfully');
     } catch (error) {
       console.error('Error deleting budget:', error);
-      const errorMessage = error.code === 'permission-denied' 
-        ? 'You do not have permission to delete this budget' 
-        : error.message;
+      const errorMessage =
+        error.code === 'permission-denied'
+          ? 'You do not have permission to delete this budget'
+          : error.message;
       dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to delete budget: ${errorMessage}` });
       throw error;
     }

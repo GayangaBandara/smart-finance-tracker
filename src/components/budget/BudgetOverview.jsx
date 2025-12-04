@@ -8,7 +8,7 @@ const BudgetOverview = () => {
 
   // Calculate spending by category
   const spendingByCategory = transactions
-    .filter(t => t.type === 'expense')
+    .filter((t) => t.type === 'expense')
     .reduce((acc, transaction) => {
       acc[transaction.category] = (acc[transaction.category] || 0) + transaction.amount;
       return acc;
@@ -21,7 +21,12 @@ const BudgetOverview = () => {
     if (percentage >= 100) {
       return { status: 'over', color: 'text-red-600', bgColor: 'bg-red-50', icon: TrendingDown };
     } else if (percentage >= 80) {
-      return { status: 'warning', color: 'text-yellow-600', bgColor: 'bg-yellow-50', icon: AlertTriangle };
+      return {
+        status: 'warning',
+        color: 'text-yellow-600',
+        bgColor: 'bg-yellow-50',
+        icon: AlertTriangle,
+      };
     } else {
       return { status: 'good', color: 'text-green-600', bgColor: 'bg-green-50', icon: TrendingUp };
     }
@@ -58,7 +63,9 @@ const BudgetOverview = () => {
           </div>
           <div className="text-center">
             <p className="text-sm text-gray-600">Remaining</p>
-            <p className="text-2xl font-bold text-green-600">${(totalBudget - totalSpent).toFixed(2)}</p>
+            <p className="text-2xl font-bold text-green-600">
+              ${(totalBudget - totalSpent).toFixed(2)}
+            </p>
           </div>
         </div>
 
@@ -71,8 +78,11 @@ const BudgetOverview = () => {
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div
               className={`h-3 rounded-full transition-all duration-300 ${
-                totalPercentage >= 100 ? 'bg-red-500' :
-                totalPercentage >= 80 ? 'bg-yellow-500' : 'bg-green-500'
+                totalPercentage >= 100
+                  ? 'bg-red-500'
+                  : totalPercentage >= 80
+                    ? 'bg-yellow-500'
+                    : 'bg-green-500'
               }`}
               style={{ width: `${Math.min(totalPercentage, 100)}%` }}
             ></div>
@@ -85,17 +95,22 @@ const BudgetOverview = () => {
         <h3 className="text-xl font-bold text-gray-800 mb-4">Category Budgets</h3>
 
         {budgets.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">No budgets set yet. Create your first budget to get started!</p>
+          <p className="text-gray-500 text-center py-8">
+            No budgets set yet. Create your first budget to get started!
+          </p>
         ) : (
           <div className="space-y-4">
-            {budgets.map(budget => {
+            {budgets.map((budget) => {
               const spent = spendingByCategory[budget.category] || 0;
               const percentage = (spent / budget.amount) * 100;
               const status = getBudgetStatus(budget);
               const Icon = status.icon;
 
               return (
-                <div key={budget.id} className={`p-4 rounded-lg border ${status.bgColor} border-gray-200`}>
+                <div
+                  key={budget.id}
+                  className={`p-4 rounded-lg border ${status.bgColor} border-gray-200`}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       <Icon className={`w-5 h-5 ${status.color}`} />
@@ -103,7 +118,9 @@ const BudgetOverview = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-gray-600">Spent / Budget</p>
-                      <p className="font-semibold">${spent.toFixed(2)} / ${budget.amount.toFixed(2)}</p>
+                      <p className="font-semibold">
+                        ${spent.toFixed(2)} / ${budget.amount.toFixed(2)}
+                      </p>
                     </div>
                   </div>
 

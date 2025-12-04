@@ -26,11 +26,13 @@ const TransactionItem = ({ transaction, onEdit, onDelete }) => {
       <div className="flex-1">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-3">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              transaction.type === 'income'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
-            }`}>
+            <span
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                transaction.type === 'income'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
+              }`}
+            >
               {transaction.type}
             </span>
             <h3 className="font-semibold text-gray-800">{transaction.category}</h3>
@@ -40,9 +42,7 @@ const TransactionItem = ({ transaction, onEdit, onDelete }) => {
 
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span>{formatDate(transaction.date)}</span>
-          {transaction.note && (
-            <span className="italic text-gray-500">"{transaction.note}"</span>
-          )}
+          {transaction.note && <span className="italic text-gray-500">"{transaction.note}"</span>}
         </div>
       </div>
 

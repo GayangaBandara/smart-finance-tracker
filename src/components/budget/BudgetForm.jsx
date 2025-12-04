@@ -25,18 +25,27 @@ const BudgetForm = ({ onSuccess, editingBudget }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: editingBudget ? {
-      category: editingBudget.category,
-      amount: editingBudget.amount,
-      period: editingBudget.period,
-    } : {
-      period: 'monthly',
-    },
+    defaultValues: editingBudget
+      ? {
+          category: editingBudget.category,
+          amount: editingBudget.amount,
+          period: editingBudget.period,
+        }
+      : {
+          period: 'monthly',
+        },
   });
 
   const categories = [
-    'Food', 'Transport', 'Utilities', 'Entertainment',
-    'Health', 'Shopping', 'Education', 'Travel', 'Other'
+    'Food',
+    'Transport',
+    'Utilities',
+    'Entertainment',
+    'Health',
+    'Shopping',
+    'Education',
+    'Travel',
+    'Other',
   ];
 
   const onSubmit = async (data) => {
@@ -77,11 +86,15 @@ const BudgetForm = ({ onSuccess, editingBudget }) => {
             className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">Select a category</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
-          {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>}
+          {errors.category && (
+            <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+          )}
         </div>
 
         {/* Amount */}
@@ -99,30 +112,15 @@ const BudgetForm = ({ onSuccess, editingBudget }) => {
           <label className="block text-sm font-medium text-gray-700 mb-2">Budget Period</label>
           <div className="space-y-2">
             <label className="flex items-center">
-              <input
-                type="radio"
-                value="weekly"
-                {...register('period')}
-                className="mr-2"
-              />
+              <input type="radio" value="weekly" {...register('period')} className="mr-2" />
               Weekly
             </label>
             <label className="flex items-center">
-              <input
-                type="radio"
-                value="monthly"
-                {...register('period')}
-                className="mr-2"
-              />
+              <input type="radio" value="monthly" {...register('period')} className="mr-2" />
               Monthly
             </label>
             <label className="flex items-center">
-              <input
-                type="radio"
-                value="yearly"
-                {...register('period')}
-                className="mr-2"
-              />
+              <input type="radio" value="yearly" {...register('period')} className="mr-2" />
               Yearly
             </label>
           </div>
@@ -130,19 +128,11 @@ const BudgetForm = ({ onSuccess, editingBudget }) => {
         </div>
 
         <div className="flex space-x-4">
-          <Button
-            type="submit"
-            disabled={submitLoading || loading}
-            className="flex-1"
-          >
+          <Button type="submit" disabled={submitLoading || loading} className="flex-1">
             {submitLoading ? 'Saving...' : editingBudget ? 'Update Budget' : 'Create Budget'}
           </Button>
           {editingBudget && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => reset()}
-            >
+            <Button type="button" variant="outline" onClick={() => reset()}>
               Cancel
             </Button>
           )}

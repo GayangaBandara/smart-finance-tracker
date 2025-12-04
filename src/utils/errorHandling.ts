@@ -26,25 +26,20 @@ export const handleError = (error: unknown): AppError => {
   }
 
   if (error instanceof Error) {
-    return new AppError(
-      error.message,
-      ErrorCodes.INVALID_OPERATION,
-      500,
-      error.stack
-    );
+    return new AppError(error.message, ErrorCodes.INVALID_OPERATION, 500, error.stack);
   }
 
-  return new AppError(
-    'An unexpected error occurred',
-    ErrorCodes.INVALID_OPERATION,
-    500
-  );
+  return new AppError('An unexpected error occurred', ErrorCodes.INVALID_OPERATION, 500);
 };
 
 export const isNetworkError = (error: unknown): boolean => {
-  return error instanceof Error && 
-    (error.message.includes('network') || error.message.includes('Network') ||
-     error.message.includes('fetch') || error.message.includes('timeout'));
+  return (
+    error instanceof Error &&
+    (error.message.includes('network') ||
+      error.message.includes('Network') ||
+      error.message.includes('fetch') ||
+      error.message.includes('timeout'))
+  );
 };
 
 export const formatErrorMessage = (error: unknown): string => {

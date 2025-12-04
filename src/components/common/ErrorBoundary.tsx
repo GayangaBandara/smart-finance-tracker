@@ -15,14 +15,14 @@ export class ErrorBoundary extends Component<Props, State> {
     super(props);
     this.state = {
       hasError: false,
-      error: null
+      error: null,
     };
   }
 
   static getDerivedStateFromError(error: Error): State {
     return {
       hasError: true,
-      error
+      error,
     };
   }
 
@@ -57,11 +57,13 @@ export class ErrorBoundary extends Component<Props, State> {
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">
-                    Something went wrong
-                  </h3>
+                  <h3 className="text-sm font-medium text-red-800">Something went wrong</h3>
                   <div className="mt-2 text-sm text-red-700">
-                    <p>{this.state.error ? formatErrorMessage(this.state.error) : 'An unexpected error occurred'}</p>
+                    <p>
+                      {this.state.error
+                        ? formatErrorMessage(this.state.error)
+                        : 'An unexpected error occurred'}
+                    </p>
                   </div>
                   <div className="mt-4">
                     <button

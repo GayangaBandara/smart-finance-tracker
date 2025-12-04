@@ -16,7 +16,7 @@ interface Budget {
 export class BudgetAnalysis {
   calculateTotalSpent(transactions: Transaction[], category?: string): number {
     return transactions
-      .filter(t => t.type === 'expense' && (!category || t.category === category))
+      .filter((t) => t.type === 'expense' && (!category || t.category === category))
       .reduce((sum, t) => sum + t.amount, 0);
   }
 
@@ -30,19 +30,22 @@ export class BudgetAnalysis {
     const monthStart = startOfMonth(now);
     const monthEnd = endOfMonth(now);
 
-    const monthlyTransactions = transactions.filter(t => 
-      t.date >= monthStart && t.date <= monthEnd
+    const monthlyTransactions = transactions.filter(
+      (t) => t.date >= monthStart && t.date <= monthEnd
     );
 
-    const dailyTotals = monthlyTransactions.reduce((acc, transaction) => {
-      const day = transaction.date.getDate();
-      acc[day] = (acc[day] || 0) + transaction.amount;
-      return acc;
-    }, {} as Record<number, number>);
+    const dailyTotals = monthlyTransactions.reduce(
+      (acc, transaction) => {
+        const day = transaction.date.getDate();
+        acc[day] = (acc[day] || 0) + transaction.amount;
+        return acc;
+      },
+      {} as Record<number, number>
+    );
 
     return Object.entries(dailyTotals).map(([day, amount]) => ({
       month: `Day ${day}`,
-      amount
+      amount,
     }));
   }
 
@@ -59,9 +62,7 @@ export class BudgetAnalysis {
 
   private calculateSpendingRate(transactions: Transaction[]): number {
     const currentMonth = new Date();
-    const monthlyTransactions = transactions.filter(t => 
-      isSameMonth(t.date, currentMonth)
-    );
+    const monthlyTransactions = transactions.filter((t) => isSameMonth(t.date, currentMonth));
     return this.calculateTotalSpent(monthlyTransactions);
   }
-};
+}

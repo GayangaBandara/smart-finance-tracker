@@ -4,7 +4,7 @@ import {
   signOut,
   sendPasswordResetEmail,
   updateProfile,
-  onAuthStateChanged
+  onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
@@ -60,7 +60,7 @@ export const authService = {
       await sendPasswordResetEmail(auth, email);
       return {
         success: true,
-        message: 'Password reset email sent successfully'
+        message: 'Password reset email sent successfully',
       };
     } catch (error) {
       throw new Error(getAuthErrorMessage(error.code));
