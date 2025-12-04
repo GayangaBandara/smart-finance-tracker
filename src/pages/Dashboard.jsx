@@ -1,7 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
-import Charts from '../components/Charts.jsx';
 import TransactionForm from '../components/transactions/TransactionForm';
 import TransactionList from '../components/transactions/TransactionList';
 
@@ -147,7 +146,8 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <Charts expenses={transactions} />
+      {/* Temporarily skipping Charts component due to build issues */}
+      {/* <Charts expenses={transactions} /> */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 xl:gap-10">
         <TransactionForm />
         <TransactionList />
