@@ -1,5 +1,3 @@
-import { describe, it, expect } from 'vitest';
-
 describe('Button Component', () => {
   it('should have a basic render structure', () => {
     // This is a placeholder test. Full button testing requires proper React test utilities setup

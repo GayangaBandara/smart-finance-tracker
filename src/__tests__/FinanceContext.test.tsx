@@ -1,5 +1,3 @@
-import { describe, it, expect } from 'vitest';
-
 describe('FinanceContext', () => {
   it('should be properly set up', () => {
     // Placeholder test - full context testing requires Firebase mock setup

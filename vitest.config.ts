@@ -8,5 +8,19 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: 'src/setupTests.ts',
+    testTimeout: 10000,
+    hookTimeout: 10000,
+    teardownTimeout: 5000,
+    environmentOptions: {
+      jsdom: {
+        url: 'http://localhost',
+        pretendToBeVisual: true,
+        resources: 'usable',
+        runScripts: 'dangerously'
+      }
+    }
   },
+  define: {
+    global: 'globalThis',
+  }
 });

@@ -1,5 +1,3 @@
-import { describe, it, expect } from 'vitest';
-
 describe('useBudget Hook', () => {
   it('should initialize properly', () => {
     // Mock test for useBudget hook initialization

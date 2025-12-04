@@ -16,7 +16,7 @@ export default [
     },
     languageOptions: {
       ecmaVersion: 2020,
-      globals: { ...globals.browser, ...globals.es2020 },
+      globals: { ...globals.browser, ...globals.es2020, ...globals.vitest },
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
@@ -34,7 +34,7 @@ export default [
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: { ...globals.browser, ...globals.es2020 },
+      globals: { ...globals.browser, ...globals.es2020, ...globals.vitest },
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
