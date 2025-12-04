@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
 

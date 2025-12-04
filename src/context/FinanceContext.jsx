@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -80,9 +80,6 @@ const FinanceContext = createContext();
 export const FinanceProvider = ({ children }) => {
   const [state, dispatch] = useReducer(financeReducer, initialState);
   const { user } = useAuth();
-  const [retryCount, setRetryCount] = React.useState(0);
-  const [isActive, setIsActive] = useState(true);
-  const maxRetries = 3;
 
   const handleFetchError = useCallback((error, source) => {
     console.error(`Error fetching ${source}:`, error);
@@ -106,7 +103,7 @@ export const FinanceProvider = ({ children }) => {
 
   // Load data when user changes
   useEffect(() => {
-    let cleanup = false;
+    let isMounted = true;
 
     let unsubscribeTransactions = null;
     let unsubscribeBudgets = null;
@@ -140,7 +137,7 @@ export const FinanceProvider = ({ children }) => {
 
       unsubscribeTransactions = onSnapshot(transactionsQuery, {
         next: (snapshot) => {
-          if (!mounted) return;
+          if (!isMounted) return;
           const transactions = snapshot.docs.map(doc => ({
             ...doc.data(),
             id: doc.id,
@@ -151,7 +148,7 @@ export const FinanceProvider = ({ children }) => {
         },
         error: (error) => {
           console.error('Transactions listener error:', error);
-          if (mounted) handleFetchError(error, 'transactions');
+          if (isMounted) handleFetchError(error, 'transactions');
         }
       });
 
@@ -164,7 +161,7 @@ export const FinanceProvider = ({ children }) => {
 
       unsubscribeBudgets = onSnapshot(budgetsQuery, {
         next: (snapshot) => {
-          if (!mounted) return;
+          if (!isMounted) return;
           const budgets = snapshot.docs.map(doc => ({
             ...doc.data(),
             id: doc.id,
@@ -177,19 +174,19 @@ export const FinanceProvider = ({ children }) => {
         },
         error: (error) => {
           console.error('Budgets listener error:', error);
-          if (mounted) handleFetchError(error, 'budgets');
+          if (isMounted) handleFetchError(error, 'budgets');
         }
       });
 
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     } catch (error) {
       console.error('Setup error:', error);
-      if (mounted) handleFetchError(error, 'setup');
+      if (isMounted) handleFetchError(error, 'setup');
     }
 
     // Cleanup on unmount
     return () => {
-      cleanup = true;
+      isMounted = false;
       cleanupListeners();
     };
   }, [user, handleFetchError]);
@@ -506,7 +503,6 @@ export const FinanceProvider = ({ children }) => {
           error={state.error}
           onRetry={() => {
             clearError();
-            setRetryCount(0);
           }}
         />
       )}

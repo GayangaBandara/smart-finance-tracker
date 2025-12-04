@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo } from 'react';
-import { AppError, formatErrorMessage } from '../utils/errorHandling';
+import { formatErrorMessage } from '../utils/errorHandling';
 
 interface Props {
   children: React.ReactNode;

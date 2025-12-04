@@ -8,16 +8,18 @@ const Button = ({
   size = 'md',
   disabled = false,
   className = '',
+  ariaLabel,
+  ariaPressed,
   ...props
 }) => {
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2';
 
   const variantClasses = {
-    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500',
-    secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
-    success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
-    outline: 'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 focus:ring-indigo-500',
+    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500 disabled:bg-indigo-400',
+    secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500 disabled:bg-gray-400',
+    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 disabled:bg-red-400',
+    success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500 disabled:bg-green-400',
+    outline: 'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 focus:ring-indigo-500 disabled:bg-gray-50 disabled:opacity-50',
   };
 
   const sizeClasses = {
@@ -26,7 +28,7 @@ const Button = ({
     lg: 'px-6 py-3 text-lg',
   };
 
-  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
+  const disabledClasses = disabled ? 'cursor-not-allowed opacity-50' : '';
 
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${disabledClasses} ${className}`;
 
@@ -36,6 +38,8 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={classes}
+      aria-label={ariaLabel}
+      aria-pressed={ariaPressed}
       {...props}
     >
       {children}
