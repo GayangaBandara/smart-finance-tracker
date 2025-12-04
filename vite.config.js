@@ -10,6 +10,6 @@ export default defineConfig({
     // which are automatically code-split by Vite
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'firebase'],
+    include: ['react', 'react-dom', 'react-router-dom'],
   },
 });
