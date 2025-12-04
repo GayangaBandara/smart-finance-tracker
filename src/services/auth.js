@@ -6,7 +6,7 @@ import {
   updateProfile,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { auth } from '../lib/firebase.js';
 
 // Authentication service functions
 export const authService = {

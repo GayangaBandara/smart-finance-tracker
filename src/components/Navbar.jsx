@@ -1,6 +1,6 @@
 import React from 'react';
 import { signOut } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { auth } from '../lib/firebase.js';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
