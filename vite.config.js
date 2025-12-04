@@ -12,4 +12,9 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
   },
+  resolve: {
+    alias: {
+      lib: '/src/lib',
+    },
+  },
 });
