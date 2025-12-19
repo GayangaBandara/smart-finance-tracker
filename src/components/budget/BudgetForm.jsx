@@ -57,7 +57,6 @@ const BudgetForm = ({ onSuccess, editingBudget }) => {
         await addBudget({
           ...data,
           amount: parseFloat(data.amount),
-          createdAt: new Date(),
         });
       }
       reset();

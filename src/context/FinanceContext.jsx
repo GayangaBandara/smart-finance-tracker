@@ -467,9 +467,10 @@ export const FinanceProvider = ({ children }) => {
 
       console.log('Adding budget:', budget);
 
-      // Prepare budget data
+      // Prepare budget data (sanitize incoming keys to avoid sending camelCase DB fields)
+      const { createdAt, updatedAt, ...rest } = budget;
       const budgetData = {
-        ...budget,
+        ...rest,
         uid: user.id,
         amount: Number(budget.amount),
         period: budget.period || 'monthly',
@@ -510,9 +511,10 @@ export const FinanceProvider = ({ children }) => {
         throw new Error('Budget ID is required for updates');
       }
 
-      // Prepare update data
+      // Prepare update data (strip camelCase timestamp fields before sending)
+      const { createdAt, updatedAt, ...rest } = budget;
       const updateData = {
-        ...budget,
+        ...rest,
         uid: user.id,
         amount: Number(budget.amount),
         updated_at: new Date().toISOString(),

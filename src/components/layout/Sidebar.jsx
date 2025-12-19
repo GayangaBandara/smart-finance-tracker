@@ -15,7 +15,6 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
   }, [isOpen]);
 
   const menuItems = [
-    { path: '/', label: 'Home', icon: Home },
     { path: '/dashboard', label: 'Dashboard', icon: BarChart3 },
     { path: '/transactions', label: 'Transactions', icon: CreditCard },
     { path: '/budgets', label: 'Budgets', icon: PiggyBank },

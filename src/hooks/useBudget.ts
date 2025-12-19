@@ -17,7 +17,6 @@ export const useBudget = () => {
         addBudget({
           ...data,
           amount: parseFloat(data.amount.toString()),
-          createdAt: new Date(),
         });
       }
       return true;
