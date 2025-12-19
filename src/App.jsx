@@ -16,16 +16,22 @@ import BudgetOverview from './components/budget/BudgetOverview.jsx';
 import BudgetForm from './components/budget/BudgetForm.jsx';
 
 // Layout component for authenticated pages
-const AppLayout = ({ children }) => (
-  <div className="min-h-screen bg-gray-50">
-    <Header />
-    <div className="flex">
-      <Sidebar />
-      <main className="flex-1 p-6">{children}</main>
+const AppLayout = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const toggleSidebar = () => setSidebarOpen((s) => !s);
+  const closeSidebar = () => setSidebarOpen(false);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header onToggleSidebar={toggleSidebar} />
+      <div className="flex">
+        <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+        <main className="flex-1 p-6">{children}</main>
+      </div>
+      <Footer />
     </div>
-    <Footer />
-  </div>
-);
+  );
+};
 
 const App = () => {
   return (

@@ -1,9 +1,9 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Menu } from 'lucide-react';
 import Button from '../common/Button';
 
-const Header = () => {
+const Header = ({ onToggleSidebar }) => {
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
@@ -19,6 +19,18 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
+            {/* Mobile menu button */}
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              className="mr-3 inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 md:hidden"
+              aria-controls="main-menu"
+              aria-expanded="false"
+              aria-label="Open menu"
+            >
+              <Menu size={20} />
+            </button>
+
             <h1 className="text-xl font-bold text-gray-900">Finance Tracker</h1>
           </div>
 
