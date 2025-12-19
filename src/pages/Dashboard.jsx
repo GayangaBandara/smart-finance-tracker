@@ -183,6 +183,7 @@ const Dashboard = () => {
                     {budget.remainingAmount < 0 ? 'Over budget by' : 'Remaining'}: $
                     {Math.abs(budget.remainingAmount).toFixed(2)}
                   </p>
+                  add logo correct all UI
                 </div>
               </GlassCard>
             ))

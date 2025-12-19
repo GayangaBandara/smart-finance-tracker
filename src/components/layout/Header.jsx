@@ -31,7 +31,7 @@ const Header = ({ onToggleSidebar }) => {
               <Menu size={20} />
             </button>
 
-            <h1 className="text-xl font-bold text-gray-900">Finance Tracker</h1>
+            <img src="/logo.png" alt="Finance Tracker Logo" className="h-8 w-auto" />
           </div>
 
           <div className="flex items-center space-x-4">
