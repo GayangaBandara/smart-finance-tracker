@@ -7,15 +7,15 @@ export default {
   theme: {
     extend: {
       screens: {
-        'xs': '475px',
+        xs: '475px',
         '3xl': '1600px',
       },
       spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
+        18: '4.5rem',
+        88: '22rem',
       },
       minHeight: {
-        'touch': '44px', // Minimum touch target size
+        touch: '44px', // Minimum touch target size
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',
