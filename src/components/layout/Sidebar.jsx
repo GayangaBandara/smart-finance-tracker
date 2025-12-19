@@ -24,7 +24,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
   // Desktop / large: static sidebar
   const staticSidebar = (
-    <aside className="hidden md:block bg-white shadow-sm border-r border-gray-200 w-64 h-screen sticky top-0">
+    <aside className="hidden md:block bg-white shadow-sm border-r border-gray-200 w-64 h-screen sticky top-16">
       <div className="p-6">
         <nav className="space-y-2" aria-label="Main navigation">
           {menuItems.map((item) => {
