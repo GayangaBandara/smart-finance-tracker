@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
 import { useAuth } from './AuthContext';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase.js';
@@ -10,6 +17,7 @@ const initialState = {
   budgets: [],
   loading: false,
   error: null,
+  analysis: null, // reserved for AI analysis results
 };
 
 // Action types
@@ -19,10 +27,13 @@ const ACTIONS = {
   ADD_TRANSACTION: 'ADD_TRANSACTION',
   UPDATE_TRANSACTION: 'UPDATE_TRANSACTION',
   DELETE_TRANSACTION: 'DELETE_TRANSACTION',
+  BULK_UPSERT_TRANSACTIONS: 'BULK_UPSERT_TRANSACTIONS',
   SET_BUDGETS: 'SET_BUDGETS',
   ADD_BUDGET: 'ADD_BUDGET',
   UPDATE_BUDGET: 'UPDATE_BUDGET',
   DELETE_BUDGET: 'DELETE_BUDGET',
+  SET_ANALYSIS: 'SET_ANALYSIS', // AI analysis payload
+  RESET_FINANCE_STATE: 'RESET_FINANCE_STATE',
   SET_ERROR: 'SET_ERROR',
   CLEAR_ERROR: 'CLEAR_ERROR',
 };
@@ -33,14 +44,30 @@ const financeReducer = (state, action) => {
     case ACTIONS.SET_LOADING:
       return { ...state, loading: action.payload };
     case ACTIONS.SET_TRANSACTIONS:
-      return { ...state, transactions: action.payload };
+      return {
+        ...state,
+        transactions: Array.isArray(action.payload)
+          ? action.payload.map((t) => normalizeTransaction(t))
+          : state.transactions,
+      };
+    case ACTIONS.BULK_UPSERT_TRANSACTIONS: {
+      const incoming = Array.isArray(action.payload)
+        ? action.payload.map((t) => normalizeTransaction(t))
+        : [];
+      const map = new Map(state.transactions.map((t) => [t.id, t]));
+      incoming.forEach((t) => map.set(t.id, t));
+      return { ...state, transactions: Array.from(map.values()) };
+    }
     case ACTIONS.ADD_TRANSACTION:
-      return { ...state, transactions: [...state.transactions, action.payload] };
+      return {
+        ...state,
+        transactions: [...state.transactions, normalizeTransaction(action.payload)],
+      };
     case ACTIONS.UPDATE_TRANSACTION:
       return {
         ...state,
         transactions: state.transactions.map((t) =>
-          t.id === action.payload.id ? action.payload : t
+          t.id === action.payload.id ? normalizeTransaction(action.payload) : t
         ),
       };
     case ACTIONS.DELETE_TRANSACTION:
@@ -62,6 +89,10 @@ const financeReducer = (state, action) => {
         ...state,
         budgets: state.budgets.filter((b) => b.id !== action.payload),
       };
+    case ACTIONS.SET_ANALYSIS:
+      return { ...state, analysis: action.payload };
+    case ACTIONS.RESET_FINANCE_STATE:
+      return { ...initialState };
     case ACTIONS.SET_ERROR:
       return { ...state, error: action.payload };
     case ACTIONS.CLEAR_ERROR:
@@ -69,6 +100,45 @@ const financeReducer = (state, action) => {
     default:
       return state;
   }
+};
+
+// Normalizer to enforce a consistent transaction schema for reducers and AI analysis
+const normalizeTransaction = (input = {}) => {
+  const t = { ...input };
+
+  // Ensure id
+  t.id = t.id || '';
+
+  // Normalize amount to number
+  t.amount = Number(t.amount) || 0;
+
+  // Normalize date to JS Date instance
+  if (t.date && t.date.toDate) {
+    t.date = t.date.toDate();
+  } else if (t.date) {
+    t.date = new Date(t.date);
+  } else if (t.createdAt && t.createdAt.toDate) {
+    t.date = t.createdAt.toDate();
+  } else {
+    t.date = t.date instanceof Date ? t.date : new Date();
+  }
+
+  // Type inference
+  t.type = t.type || (t.amount < 0 ? 'expense' : 'income');
+  t.category = t.category || 'Uncategorized';
+  t.note = t.note || '';
+
+  return {
+    id: t.id,
+    date: t.date,
+    amount: t.amount,
+    type: t.type,
+    category: t.category,
+    note: t.note,
+    uid: t.uid,
+    createdAt: t.createdAt,
+    updatedAt: t.updatedAt,
+  };
 };
 
 // Create context
@@ -142,12 +212,9 @@ export const FinanceProvider = ({ children }) => {
       unsubscribeTransactions = onSnapshot(transactionsQuery, {
         next: (snapshot) => {
           if (!isMounted) return;
-          const transactions = snapshot.docs.map((doc) => ({
-            ...doc.data(),
-            id: doc.id,
-            amount: Number(doc.data().amount),
-            createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt),
-          }));
+          const transactions = snapshot.docs.map((doc) =>
+            normalizeTransaction({ ...doc.data(), id: doc.id })
+          );
           dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactions });
         },
         error: (error) => {
@@ -244,12 +311,12 @@ export const FinanceProvider = ({ children }) => {
       console.log('Transaction added with ID:', docRef.id);
 
       // Add to local state with the generated ID
-      const newTransaction = {
+      const newTransaction = normalizeTransaction({
         ...transactionData,
         id: docRef.id,
         createdAt: new Date(),
         updatedAt: new Date(),
-      };
+      });
 
       dispatch({ type: ACTIONS.ADD_TRANSACTION, payload: newTransaction });
       console.log('Local state updated with new transaction');
@@ -300,11 +367,11 @@ export const FinanceProvider = ({ children }) => {
       await updateDoc(doc(db, 'transactions', transaction.id), updateData);
 
       // Update local state with the new data
-      const updatedTransaction = {
+      const updatedTransaction = normalizeTransaction({
         ...updateData,
         id: transaction.id,
         updatedAt: new Date(),
-      };
+      });
 
       dispatch({ type: ACTIONS.UPDATE_TRANSACTION, payload: updatedTransaction });
       console.log('Transaction updated successfully');
@@ -496,6 +563,48 @@ export const FinanceProvider = ({ children }) => {
   const setError = (error) => dispatch({ type: ACTIONS.SET_ERROR, payload: error });
   const clearError = () => dispatch({ type: ACTIONS.CLEAR_ERROR });
 
+  // Analysis setter for AI results
+  const setAnalysis = (analysis) => dispatch({ type: ACTIONS.SET_ANALYSIS, payload: analysis });
+
+  // Memoized selectors for analytics and AI usage
+  const monthlyExpenses = useMemo(() => {
+    return state.transactions.reduce((acc, t) => {
+      const month = `${t.date.getFullYear()}-${String(t.date.getMonth() + 1).padStart(2, '0')}`;
+      if (t.type === 'expense') {
+        acc[month] = (acc[month] || 0) + Math.abs(t.amount);
+      }
+      return acc;
+    }, {});
+  }, [state.transactions]);
+
+  const weeklySpending = useMemo(() => {
+    const days = 7;
+    const now = new Date();
+    const result = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(now.getDate() - i);
+      const key = date.toISOString().slice(0, 10);
+      const total = state.transactions.reduce((sum, t) => {
+        const tDate = t.date instanceof Date ? t.date : new Date(t.date);
+        const tKey = tDate.toISOString().slice(0, 10);
+        return t.type === 'expense' && tKey === key ? sum + Math.abs(t.amount) : sum;
+      }, 0);
+      result.push({ date: key, total });
+    }
+    return result;
+  }, [state.transactions]);
+
+  const categoryTotals = useMemo(() => {
+    return state.transactions.reduce((acc, t) => {
+      const cat = t.category || 'Uncategorized';
+      if (t.type === 'expense') {
+        acc[cat] = (acc[cat] || 0) + Math.abs(t.amount);
+      }
+      return acc;
+    }, {});
+  }, [state.transactions]);
+
   const value = {
     ...state,
     setLoading,
@@ -509,6 +618,11 @@ export const FinanceProvider = ({ children }) => {
     deleteBudget,
     setError,
     clearError,
+    // New helpers & selectors
+    setAnalysis,
+    monthlyExpenses,
+    weeklySpending,
+    categoryTotals,
   };
 
   return (
