@@ -24,9 +24,12 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
   // Desktop / large: static sidebar
   const staticSidebar = (
-    <aside className="hidden md:block bg-white shadow-sm border-r border-gray-200 w-64 h-screen sticky top-16">
+    <aside className="hidden md:block glass-card border-r border-white/20 w-64 h-screen fixed top-16 left-0 z-10">
       <div className="p-6">
-        <nav className="space-y-2" aria-label="Main navigation">
+        <div className="mb-6">
+          <h2 className="text-sm font-bold text-gray-600 uppercase tracking-wider">Navigation</h2>
+        </div>
+        <nav className="space-y-1" aria-label="Main navigation">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -35,18 +38,50 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-indigo-50 text-indigo-700 border-r-2 border-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
+                className={`nav-item group ${isActive ? 'active' : ''}`}
               >
-                <Icon size={20} />
-                <span>{item.label}</span>
+                <div className="flex items-center space-x-3">
+                  <div
+                    className={`p-2 rounded-lg transition-all duration-300 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                        : 'bg-white/5 text-gray-600 group-hover:bg-white/10 group-hover:text-gray-900'
+                    }`}
+                  >
+                    <Icon size={18} />
+                  </div>
+                  <span className="font-medium">{item.label}</span>
+                </div>
+                {isActive && (
+                  <div className="ml-auto w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                )}
               </Link>
             );
           })}
         </nav>
+
+        {/* Footer section */}
+        <div className="mt-8 pt-6 border-t border-white/10">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-2">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+            <p className="text-xs text-gray-500">Finance Tracker</p>
+            <p className="text-xs text-gray-400">v2.0</p>
+          </div>
+        </div>
       </div>
     </aside>
   );
@@ -58,7 +93,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
         <>
           <motion.div
             key="overlay"
-            className="fixed inset-0 bg-black/40 z-40 md:hidden"
+            className="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-sm"
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -69,7 +104,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
           <motion.aside
             key="drawer"
-            className="fixed right-0 top-0 bottom-0 w-80 bg-white z-50 shadow-lg p-4 md:hidden"
+            className="fixed right-0 top-0 bottom-0 w-80 glass-card z-50 shadow-2xl p-6 md:hidden"
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -81,20 +116,47 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
               if (e.key === 'Escape') onClose();
             }}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Menu</h2>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl">
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-800">Menu</h2>
+                  <p className="text-xs text-gray-500">Finance Tracker</p>
+                </div>
+              </div>
               <button
                 ref={closeBtnRef}
                 onClick={onClose}
-                className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-4 focus:ring-white/30"
                 aria-label="Close menu"
               >
-                ✕
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
               </button>
             </div>
 
             <nav className="space-y-2" aria-label="Main navigation">
-              {menuItems.map((item) => {
+              {menuItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
 
@@ -104,23 +166,57 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
                     variants={sidebarItemVariants}
                     initial="hidden"
                     animate="visible"
+                    transition={{ delay: index * 0.1 }}
                   >
                     <Link
                       to={item.path}
                       onClick={onClose}
-                      className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        isActive
-                          ? 'bg-indigo-50 text-indigo-700 border-r-2 border-indigo-700'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
+                      className={`nav-item group ${isActive ? 'active' : ''}`}
                     >
-                      <Icon size={20} />
-                      <span>{item.label}</span>
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={`p-3 rounded-xl transition-all duration-300 ${
+                            isActive
+                              ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
+                              : 'bg-white/10 text-gray-600 group-hover:bg-white/20 group-hover:text-gray-900'
+                          }`}
+                        >
+                          <Icon size={20} />
+                        </div>
+                        <span className="font-semibold">{item.label}</span>
+                      </div>
+                      {isActive && (
+                        <div className="ml-auto">
+                          <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                        </div>
+                      )}
                     </Link>
                   </motion.div>
                 );
               })}
             </nav>
+
+            {/* Mobile footer */}
+            <div className="absolute bottom-6 left-6 right-6">
+              <div className="glass rounded-xl p-4 text-center">
+                <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-2">
+                  <svg
+                    className="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </div>
+                <p className="text-xs text-gray-500">Finance Tracker v2.0</p>
+              </div>
+            </div>
           </motion.aside>
         </>
       )}

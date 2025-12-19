@@ -60,7 +60,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', className = '', 
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" role="presentation">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-4 sm:pb-20 text-center sm:block sm:p-0">
         {/* Background overlay */}
         <div
           className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
@@ -71,28 +71,30 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', className = '', 
         {/* Modal panel */}
         <div
           ref={modalRef}
-          className={`inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle ${sizeClasses[size]} w-full ${className}`}
+          className={`inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle ${sizeClasses[size]} w-full my-4 sm:my-8 max-h-[90vh] ${className}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
           aria-label={ariaLabel}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h3 id="modal-title" className="text-lg font-medium text-gray-900">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+            <h3 id="modal-title" className="text-base sm:text-lg font-medium text-gray-900">
               {title}
             </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-touch min-w-touch flex items-center justify-center"
               aria-label="Close dialog"
             >
-              <X size={24} />
+              <X size={20} className="sm:w-6 sm:h-6" />
             </button>
           </div>
 
           {/* Content */}
-          <div className="px-6 py-4">{children}</div>
+          <div className="px-4 sm:px-6 py-4 overflow-y-auto max-h-[calc(90vh-80px)]">
+            {children}
+          </div>
         </div>
       </div>
     </div>

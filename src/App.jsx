@@ -7,6 +7,9 @@ import Footer from './components/layout/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import Terms from './pages/Terms.jsx';
+import Privacy from './pages/Privacy.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Reports from './pages/Reports.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -26,7 +29,7 @@ const AppLayout = ({ children }) => {
       <Header onToggleSidebar={toggleSidebar} />
       <div className="flex">
         <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 md:ml-64">{children}</main>
       </div>
       <Footer />
     </div>
@@ -43,6 +46,9 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
 
             {/* Protected routes */}
             <Route

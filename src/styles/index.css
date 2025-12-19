@@ -36,14 +36,20 @@
 }
 
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
   width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: system-ui, sans-serif;
   background-color: var(--gray-50);
   color: var(--gray-900);
 }
@@ -61,22 +67,26 @@ h6 {
 }
 
 h1 {
-  font-size: 2.25rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
 }
 h2 {
-  font-size: 1.875rem;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
 }
 h3 {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 2rem);
 }
 h4 {
-  font-size: 1.25rem;
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
 }
 h5 {
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 2vw, 1.25rem);
 }
 h6 {
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
+
+p {
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
 }
 
 /* Links */
@@ -125,6 +135,19 @@ select:focus {
   outline: none;
 }
 
+/* Responsive Images & Media */
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Section Spacing */
+section {
+  padding-block: clamp(3rem, 8vw, 6rem);
+}
+
 /* Custom Components */
 .card {
   background: white;
@@ -146,6 +169,53 @@ select:focus {
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
+}
+
+/* Responsive Container */
+.container {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+/* Flexbox Utilities */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Grid Utility */
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Navigation Item */
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+  background: rgba(79, 70, 229, 0.1);
 }
 
 /* Status Colors */
@@ -221,20 +291,9 @@ select:focus {
 }
 
 /* Responsive Design */
-@media (max-width: 640px) {
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  h1 {
-    font-size: 1.875rem;
-  }
-  h2 {
-    font-size: 1.5rem;
-  }
-  h3 {
-    font-size: 1.25rem;
+@media (max-width: 768px) {
+  nav ul {
+    display: none;
   }
 }
 

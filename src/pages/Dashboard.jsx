@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
 import TransactionForm from '../components/transactions/TransactionForm';
 import TransactionList from '../components/transactions/TransactionList';
+import Charts from '../components/Charts';
 import GlassCard from '../components/common/GlassCard';
 import SkeletonCard from '../components/common/SkeletonCard';
 
@@ -151,65 +152,164 @@ const Dashboard = () => {
           ) : (
             <>
               <motion.div variants={cardVariants}>
-                <GlassCard title="Total Income">
-                  <motion.p
-                    className="text-sm text-green-600"
+                <GlassCard title="Total Income" variant="metric">
+                  <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: shouldReduceMotion ? 0 : 0.3, duration: 0.2 }}
+                    className="flex items-center justify-between"
                   >
-                    Income
-                  </motion.p>
-                  <motion.p
-                    className="text-2xl md:text-3xl font-bold text-green-600"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: shouldReduceMotion ? 0 : 0.35, duration: 0.25 }}
-                  >
-                    ${totalIncome.toFixed(2)}
-                  </motion.p>
+                    <div>
+                      <motion.p
+                        className="text-sm font-semibold text-green-600 mb-1"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: shouldReduceMotion ? 0 : 0.35, duration: 0.2 }}
+                      >
+                        Total Income
+                      </motion.p>
+                      <motion.p
+                        className="text-3xl md:text-4xl font-bold text-green-600"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: shouldReduceMotion ? 0 : 0.4, duration: 0.25 }}
+                      >
+                        ${totalIncome.toFixed(2)}
+                      </motion.p>
+                    </div>
+                    <motion.div
+                      className="p-3 bg-green-500/20 rounded-xl"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: shouldReduceMotion ? 0 : 0.45, duration: 0.3 }}
+                    >
+                      <svg
+                        className="w-8 h-8 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 11l5-5m0 0l5 5m-5-5v12"
+                        />
+                      </svg>
+                    </motion.div>
+                  </motion.div>
                 </GlassCard>
               </motion.div>
 
               <motion.div variants={cardVariants}>
-                <GlassCard title="Total Expenses">
-                  <motion.p
-                    className="text-sm text-red-600"
+                <GlassCard title="Total Expenses" variant="metric">
+                  <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: shouldReduceMotion ? 0 : 0.3, duration: 0.2 }}
+                    className="flex items-center justify-between"
                   >
-                    Expenses
-                  </motion.p>
-                  <motion.p
-                    className="text-2xl md:text-3xl font-bold text-red-600"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: shouldReduceMotion ? 0 : 0.35, duration: 0.25 }}
-                  >
-                    ${totalExpenses.toFixed(2)}
-                  </motion.p>
+                    <div>
+                      <motion.p
+                        className="text-sm font-semibold text-red-600 mb-1"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: shouldReduceMotion ? 0 : 0.35, duration: 0.2 }}
+                      >
+                        Total Expenses
+                      </motion.p>
+                      <motion.p
+                        className="text-3xl md:text-4xl font-bold text-red-600"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: shouldReduceMotion ? 0 : 0.4, duration: 0.25 }}
+                      >
+                        ${totalExpenses.toFixed(2)}
+                      </motion.p>
+                    </div>
+                    <motion.div
+                      className="p-3 bg-red-500/20 rounded-xl"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: shouldReduceMotion ? 0 : 0.45, duration: 0.3 }}
+                    >
+                      <svg
+                        className="w-8 h-8 text-red-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 13l-5 5m0 0l-5-5m5 5V6"
+                        />
+                      </svg>
+                    </motion.div>
+                  </motion.div>
                 </GlassCard>
               </motion.div>
 
               <motion.div variants={cardVariants}>
-                <GlassCard title="Net Balance">
-                  <motion.p
-                    className={`text-sm ${netBalance >= 0 ? 'text-blue-600' : 'text-orange-600'}`}
+                <GlassCard title="Net Balance" variant="metric">
+                  <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: shouldReduceMotion ? 0 : 0.3, duration: 0.2 }}
+                    className="flex items-center justify-between"
                   >
-                    {netBalance >= 0 ? 'Positive' : 'Negative'}
-                  </motion.p>
-                  <motion.p
-                    className={`text-2xl md:text-3xl font-bold ${netBalance >= 0 ? 'text-blue-600' : 'text-orange-600'}`}
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: shouldReduceMotion ? 0 : 0.35, duration: 0.25 }}
-                  >
-                    ${Math.abs(netBalance).toFixed(2)}
-                  </motion.p>
+                    <div>
+                      <motion.p
+                        className={`text-sm font-semibold mb-1 ${
+                          netBalance >= 0 ? 'text-blue-600' : 'text-orange-600'
+                        }`}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: shouldReduceMotion ? 0 : 0.35, duration: 0.2 }}
+                      >
+                        {netBalance >= 0 ? 'Positive Balance' : 'Negative Balance'}
+                      </motion.p>
+                      <motion.p
+                        className={`text-3xl md:text-4xl font-bold ${
+                          netBalance >= 0 ? 'text-blue-600' : 'text-orange-600'
+                        }`}
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: shouldReduceMotion ? 0 : 0.4, duration: 0.25 }}
+                      >
+                        ${Math.abs(netBalance).toFixed(2)}
+                      </motion.p>
+                    </div>
+                    <motion.div
+                      className={`p-3 rounded-xl ${
+                        netBalance >= 0 ? 'bg-blue-500/20' : 'bg-orange-500/20'
+                      }`}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: shouldReduceMotion ? 0 : 0.45, duration: 0.3 }}
+                    >
+                      <svg
+                        className={`w-8 h-8 ${
+                          netBalance >= 0 ? 'text-blue-600' : 'text-orange-600'
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d={
+                            netBalance >= 0
+                              ? 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'
+                              : 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6'
+                          }
+                        />
+                      </svg>
+                    </motion.div>
+                  </motion.div>
                 </GlassCard>
               </motion.div>
             </>
@@ -222,16 +322,36 @@ const Dashboard = () => {
             <SkeletonCard />
           ) : (
             <motion.div variants={cardVariants}>
-              <GlassCard title="Quick Insights">
-                <div className="space-y-3">
+              <GlassCard title="Quick Insights" variant="elevated">
+                <div className="space-y-6">
                   <motion.div
-                    className="flex items-center justify-between"
+                    className="flex items-center justify-between p-4 bg-white/5 rounded-xl"
                     initial={{ opacity: 0, x: -5 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: shouldReduceMotion ? 0 : 0.4, duration: 0.2 }}
                   >
-                    <span className="text-sm text-gray-500">This month expenses</span>
-                    <span className="font-semibold text-gray-800">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-indigo-500/20 rounded-lg">
+                        <svg
+                          className="w-5 h-5 text-indigo-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-600">This month</span>
+                        <p className="text-xs text-gray-500">Total expenses</p>
+                      </div>
+                    </div>
+                    <span className="text-xl font-bold text-gray-800">
                       ${thisMonthExpenses.toFixed(2)}
                     </span>
                   </motion.div>
@@ -241,31 +361,76 @@ const Dashboard = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: shouldReduceMotion ? 0 : 0.45, duration: 0.2 }}
                   >
-                    <h4 className="text-sm font-medium text-gray-600 mb-2">Top categories</h4>
+                    <h4 className="text-sm font-semibold text-gray-600 mb-3 flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        />
+                      </svg>
+                      Top Categories
+                    </h4>
                     {topCategories.length ? (
-                      topCategories.map(([cat, amt], index) => (
-                        <motion.div
-                          key={cat}
-                          className="flex justify-between text-sm text-gray-700"
-                          initial={{ opacity: 0, x: -5 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{
-                            delay: shouldReduceMotion ? 0 : 0.45 + index * 0.05,
-                            duration: 0.2,
-                          }}
-                        >
-                          <span>{cat}</span>
-                          <span>${amt.toFixed(2)}</span>
-                        </motion.div>
-                      ))
+                      <div className="space-y-2">
+                        {topCategories.map(([cat, amt], index) => (
+                          <motion.div
+                            key={cat}
+                            className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+                            initial={{ opacity: 0, x: -5 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{
+                              delay: shouldReduceMotion ? 0 : 0.45 + index * 0.05,
+                              duration: 0.2,
+                            }}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  index === 0
+                                    ? 'bg-indigo-500'
+                                    : index === 1
+                                      ? 'bg-purple-500'
+                                      : 'bg-pink-500'
+                                }`}
+                              ></div>
+                              <span className="text-sm font-medium text-gray-700">{cat}</span>
+                            </div>
+                            <span className="text-sm font-bold text-gray-800">
+                              ${amt.toFixed(2)}
+                            </span>
+                          </motion.div>
+                        ))}
+                      </div>
                     ) : (
                       <motion.div
-                        className="text-sm text-gray-500"
+                        className="empty-state p-6"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: shouldReduceMotion ? 0 : 0.45, duration: 0.2 }}
                       >
-                        No category data yet
+                        <div className="text-center">
+                          <svg
+                            className="w-8 h-8 mx-auto text-gray-400 mb-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1}
+                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                            />
+                          </svg>
+                          <p className="text-sm text-gray-500">No category data yet</p>
+                        </div>
                       </motion.div>
                     )}
                   </motion.div>
@@ -366,14 +531,17 @@ const Dashboard = () => {
         variants={containerVariants}
       >
         <motion.div className="p-4" variants={itemVariants}>
-          {/* placeholder for charts */}
-          <motion.div
-            className="h-48 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 glass-card"
-            whileHover={{ scale: 1.01 }}
-            transition={{ duration: 0.2 }}
-          >
-            Charts (coming soon)
-          </motion.div>
+          {showSkeletons ? (
+            <SkeletonCard />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: shouldReduceMotion ? 0 : 0.7, duration: 0.3 }}
+            >
+              <Charts expenses={transactions} />
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Transactions */}

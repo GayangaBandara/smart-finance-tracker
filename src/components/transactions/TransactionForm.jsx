@@ -66,94 +66,179 @@ const TransactionForm = ({ onSuccess }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Transaction</h2>
+    <div className="glass-card p-8 hover-lift">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Add Transaction</h2>
+          <p className="text-gray-600">Track your income and expenses</p>
+        </div>
+        <div className="status-badge">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="ml-2 text-xs font-medium">Ready</span>
+        </div>
+      </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
+        <div className="status-badge status-danger mb-6">
+          <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fillRule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              clipRule="evenodd"
+            />
+          </svg>
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Transaction Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-          <div className="flex space-x-4">
-            <label className="flex items-center">
+        <div className="form-group">
+          <label className="form-label">Transaction Type</label>
+          <div className="grid grid-cols-2 gap-3">
+            <label
+              className={`relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                watch('type') === 'expense'
+                  ? 'border-red-500 bg-red-50 text-red-700'
+                  : 'border-gray-200 bg-white/5 hover:border-gray-300'
+              }`}
+            >
               <input
                 type="radio"
                 value="expense"
                 {...register('type')}
                 onChange={() => handleTypeChange('expense')}
-                className="mr-2"
+                className="sr-only"
               />
-              Expense
+              <div className="flex items-center space-x-2">
+                <div
+                  className={`w-3 h-3 rounded-full border-2 ${
+                    watch('type') === 'expense' ? 'border-red-500 bg-red-500' : 'border-gray-300'
+                  }`}
+                ></div>
+                <span className="font-medium">Expense</span>
+              </div>
             </label>
-            <label className="flex items-center">
+            <label
+              className={`relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                watch('type') === 'income'
+                  ? 'border-green-500 bg-green-50 text-green-700'
+                  : 'border-gray-200 bg-white/5 hover:border-gray-300'
+              }`}
+            >
               <input
                 type="radio"
                 value="income"
                 {...register('type')}
                 onChange={() => handleTypeChange('income')}
-                className="mr-2"
+                className="sr-only"
               />
-              Income
+              <div className="flex items-center space-x-2">
+                <div
+                  className={`w-3 h-3 rounded-full border-2 ${
+                    watch('type') === 'income' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                  }`}
+                ></div>
+                <span className="font-medium">Income</span>
+              </div>
             </label>
           </div>
         </div>
 
         {/* Amount */}
-        <Input
-          label="Amount"
-          type="number"
-          step="0.01"
-          {...register('amount')}
-          error={errors.amount?.message}
-          required
-        />
+        <div className="form-group">
+          <label className="form-label">Amount</label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <span className="text-gray-500 text-lg font-medium">$</span>
+            </div>
+            <input
+              type="number"
+              step="0.01"
+              {...register('amount')}
+              className="input-glass pl-8"
+              placeholder="0.00"
+            />
+          </div>
+          {errors.amount && <p className="form-error">{errors.amount.message}</p>}
+        </div>
 
         {/* Category */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-          <select
-            {...register('category')}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">Select a category</option>
-            {(categories[watch('type') || 'expense'] || []).map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-          {errors.category && (
-            <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
-          )}
+        <div className="form-group">
+          <label className="form-label">Category</label>
+          <div className="relative">
+            <select
+              {...register('category')}
+              className="input-glass appearance-none cursor-pointer"
+            >
+              <option value="">Select a category</option>
+              {(categories[watch('type') || 'expense'] || []).map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+          {errors.category && <p className="form-error">{errors.category.message}</p>}
         </div>
 
         {/* Date */}
-        <Input
-          label="Date"
-          type="date"
-          {...register('date')}
-          error={errors.date?.message}
-          required
-        />
+        <div className="form-group">
+          <label className="form-label">Date</label>
+          <div className="relative">
+            <input type="date" {...register('date')} className="input-glass" />
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+          </div>
+          {errors.date && <p className="form-error">{errors.date.message}</p>}
+        </div>
 
         {/* Note */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Note (Optional)</label>
+        <div className="form-group">
+          <label className="form-label">Note (Optional)</label>
           <textarea
             {...register('note')}
             rows="3"
-            placeholder="Add a note..."
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="Add a note about this transaction..."
+            className="input-glass resize-none"
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={submitLoading || loading}>
-          {submitLoading ? 'Adding...' : 'Add Transaction'}
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={submitLoading || loading}
+          loading={submitLoading}
+        >
+          {submitLoading ? 'Adding Transaction...' : 'Add Transaction'}
         </Button>
       </form>
     </div>

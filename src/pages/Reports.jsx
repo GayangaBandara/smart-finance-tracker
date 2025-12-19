@@ -424,17 +424,17 @@ const Reports = () => {
 
   return (
     <div className="container mx-auto px-4 py-8" id="report-content">
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
+      <div className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-start lg:space-y-0 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Financial Reports</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Financial Reports</h1>
           <p className="text-gray-600">Analyze your financial data and trends</p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mt-4 lg:mt-0">
+        <div className="space-y-4 lg:space-y-0">
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="week">Last Week</option>
             <option value="month">Last Month</option>
@@ -442,22 +442,28 @@ const Reports = () => {
             <option value="year">Last Year</option>
           </select>
 
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button onClick={() => exportReport('pdf')} className="flex items-center space-x-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <Button
+              onClick={() => exportReport('pdf')}
+              className="flex items-center justify-center space-x-2"
+            >
               <FileText size={16} />
-              <span>Export PDF</span>
+              <span>PDF</span>
             </Button>
-            <Button onClick={() => exportReport('word')} className="flex items-center space-x-2">
+            <Button
+              onClick={() => exportReport('word')}
+              className="flex items-center justify-center space-x-2"
+            >
               <File size={16} />
-              <span>Export Word</span>
+              <span>Word</span>
             </Button>
             <Button
               onClick={() => exportReport('json')}
               variant="outline"
-              className="flex items-center space-x-2"
+              className="flex items-center justify-center space-x-2"
             >
               <Download size={16} />
-              <span>Export JSON</span>
+              <span>JSON</span>
             </Button>
           </div>
         </div>
@@ -505,21 +511,36 @@ const Reports = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Monthly Trend</h3>
-          <Line data={lineChartData} />
+      <div className="space-y-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-200">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Monthly Trend</h3>
+            <div className="h-64 sm:h-80">
+              <Line
+                data={lineChartData}
+                options={{ responsive: true, maintainAspectRatio: false }}
+              />
+            </div>
+          </div>
+
+          <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-200">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">
+              Expenses by Category
+            </h3>
+            <div className="h-64 sm:h-80">
+              <Pie data={pieChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Expenses by Category</h3>
-          <Pie data={pieChartData} />
+        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-200">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">
+            Income vs Expenses by Category
+          </h3>
+          <div className="h-64 sm:h-80">
+            <Bar data={barChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+          </div>
         </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200 mb-8">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Income vs Expenses by Category</h3>
-        <Bar data={barChartData} />
       </div>
 
       {/* Budget Analysis */}
@@ -584,26 +605,36 @@ const Reports = () => {
       </div>
 
       {/* Category Breakdown Table */}
-      <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Category Breakdown</h3>
+      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-200">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Category Breakdown</h3>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-semibold text-gray-800">Category</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-800">Income</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-800">Expenses</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-800">Net</th>
+                <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-800">
+                  Category
+                </th>
+                <th className="text-right py-3 px-2 sm:px-4 font-semibold text-gray-800">Income</th>
+                <th className="text-right py-3 px-2 sm:px-4 font-semibold text-gray-800">
+                  Expenses
+                </th>
+                <th className="text-right py-3 px-2 sm:px-4 font-semibold text-gray-800">Net</th>
               </tr>
             </thead>
             <tbody>
               {categoryBreakdown.map((item, index) => (
                 <tr key={index} className="border-b border-gray-100">
-                  <td className="py-3 px-4 font-medium">{item.category}</td>
-                  <td className="py-3 px-4 text-right text-green-600">${item.income.toFixed(2)}</td>
-                  <td className="py-3 px-4 text-right text-red-600">${item.expense.toFixed(2)}</td>
+                  <td className="py-3 px-2 sm:px-4 font-medium text-sm sm:text-base">
+                    {item.category}
+                  </td>
+                  <td className="py-3 px-2 sm:px-4 text-right text-green-600 text-sm sm:text-base">
+                    ${item.income.toFixed(2)}
+                  </td>
+                  <td className="py-3 px-2 sm:px-4 text-right text-red-600 text-sm sm:text-base">
+                    ${item.expense.toFixed(2)}
+                  </td>
                   <td
-                    className={`py-3 px-4 text-right font-semibold ${item.net >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    className={`py-3 px-2 sm:px-4 text-right font-semibold text-sm sm:text-base ${item.net >= 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
                     ${item.net.toFixed(2)}
                   </td>
