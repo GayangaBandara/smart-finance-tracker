@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
 import TransactionForm from '../components/transactions/TransactionForm';
 import TransactionList from '../components/transactions/TransactionList';
-import Charts from '../components/Charts.jsx';
+import Charts from '../components/Charts';
 import GlassCard from '../components/common/GlassCard';
 import SkeletonCard from '../components/common/SkeletonCard';
 
