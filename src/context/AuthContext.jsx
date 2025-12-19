@@ -1,11 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import {
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from 'firebase/auth';
-import { auth } from '@lib/firebase.js';
+import { supabase } from '../lib/supabaseClient';
 
 // Create the authentication context
 const AuthContext = createContext();
@@ -16,44 +10,55 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Subscribe to user state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('Auth state changed, user:', user);
-      setUser(user);
+    let mounted = true;
+
+    // Get current session/user
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!mounted) return;
+      if (error) {
+        console.error('Error getting user:', error);
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      setUser(data.user || null);
       setLoading(false);
     });
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
+    // Subscribe to auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => {
+      mounted = false;
+      listener?.subscription?.unsubscribe?.();
+    };
   }, []);
 
-  // Register new user
-  const register = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
-    } catch (error) {
-      throw new Error(error.message);
-    }
+  // Register new user (wrapper)
+  const register = async (email, password, displayName) => {
+    const { data, error } = await supabase.auth.signUp(
+      { email, password },
+      { data: { displayName } }
+    );
+    if (error) throw error;
+    return data.user;
   };
 
   // Sign in user
   const login = async (email, password) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
-    } catch (error) {
-      throw new Error(error.message);
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data.user;
   };
 
   // Sign out
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      throw new Error(error.message);
-    }
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   };
 
   const value = {

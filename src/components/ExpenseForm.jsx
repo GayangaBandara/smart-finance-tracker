@@ -33,7 +33,7 @@ const ExpenseForm = () => {
         uid: user.uid,
       };
 
-      // Using context's addTransaction which handles Firebase interaction
+      // Using context's addTransaction which handles backend (now Supabase) interaction
       await addTransaction(newTransaction);
 
       // Reset form fields after successful submission

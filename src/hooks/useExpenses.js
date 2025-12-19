@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase.js';
+import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 
 const useExpenses = () => {
@@ -15,31 +14,50 @@ const useExpenses = () => {
       return;
     }
 
-    setLoading(true);
-    const q = query(
-      collection(db, 'expenses'),
-      where('uid', '==', user.uid),
-      orderBy('createdAt', 'desc')
-    );
+    let channel = null;
 
-    const unsubscribe = onSnapshot(
-      q,
-      (querySnapshot) => {
-        const expensesData = [];
-        querySnapshot.forEach((doc) => {
-          expensesData.push({ ...doc.data(), id: doc.id });
-        });
-        setExpenses(expensesData);
-        setLoading(false);
-      },
-      (error) => {
-        console.error('Error fetching expenses:', error);
+    const fetchExpenses = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('expenses')
+          .select('*')
+          .eq('uid', user.uid)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+
+        const formatted = (data || []).map((r) => ({
+          ...r,
+          id: r.id,
+          createdAt: r.created_at ? new Date(r.created_at) : new Date(),
+        }));
+        setExpenses(formatted);
+      } catch (err) {
+        console.error('Error fetching expenses:', err);
         setExpenses([]);
+      } finally {
         setLoading(false);
       }
-    );
+    };
 
-    return () => unsubscribe();
+    fetchExpenses();
+
+    // Subscribe to realtime changes for this user's expenses
+    channel = supabase
+      .channel(`public:expenses:uid=${user.uid}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'expenses', filter: `uid=eq.${user.uid}` },
+        (payload) => {
+          // Simple handler: refetch on changes. For higher performance, update local state from payload.
+          fetchExpenses();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      if (channel) channel.unsubscribe();
+    };
   }, [user]);
 
   return { expenses, loading };

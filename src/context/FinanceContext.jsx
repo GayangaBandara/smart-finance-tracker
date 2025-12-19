@@ -5,10 +5,10 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useState,
 } from 'react';
 import { useAuth } from './AuthContext';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase.js';
+import { supabase } from '../lib/supabaseClient';
 import RetryError from '../components/common/RetryError';
 
 // Initial state
@@ -147,13 +147,14 @@ const FinanceContext = createContext();
 // Provider component
 export const FinanceProvider = ({ children }) => {
   const [state, dispatch] = useReducer(financeReducer, initialState);
+  const [retryCount, setRetryCount] = useState(0);
   const { user } = useAuth();
 
   const handleFetchError = useCallback((error, source) => {
     console.error(`Error fetching ${source}:`, error);
 
-    // Handle specific Firebase errors
-    if (error.code === 'permission-denied') {
+    // Handle specific backend errors (Supabase)
+    if (error?.code === 'permission-denied') {
       dispatch({
         type: ACTIONS.SET_ERROR,
         payload: 'You do not have permission to access this data. Please log out and log in again.',
@@ -175,7 +176,15 @@ export const FinanceProvider = ({ children }) => {
     });
   }, []);
 
-  // Load data when user changes
+  // Allow retrying fetch/listeners by bumping this counter
+  const retryFetch = useCallback(() => {
+    // Clear any visible error, show loading, and trigger the effect to re-run
+    dispatch({ type: ACTIONS.CLEAR_ERROR });
+    dispatch({ type: ACTIONS.SET_LOADING, payload: true });
+    setRetryCount((c) => c + 1);
+  }, [setRetryCount]);
+
+  // Load data when user changes or when a retry is requested
   useEffect(() => {
     let isMounted = true;
 
@@ -202,54 +211,91 @@ export const FinanceProvider = ({ children }) => {
 
     // Set up the listeners
     try {
-      // Transactions listener
-      const transactionsQuery = query(
-        collection(db, 'transactions'),
-        where('uid', '==', user.uid),
-        orderBy('date', 'desc')
-      );
+      // Initial fetch for transactions
+      const fetchTransactionsOnce = async () => {
+        try {
+          const { data: transactionsData, error: trxError } = await supabase
+            .from('transactions')
+            .select('*')
+            .eq('uid', user.id)
+            .order('date', { ascending: false });
+          if (trxError) throw trxError;
 
-      unsubscribeTransactions = onSnapshot(transactionsQuery, {
-        next: (snapshot) => {
-          if (!isMounted) return;
-          const transactions = snapshot.docs.map((doc) =>
-            normalizeTransaction({ ...doc.data(), id: doc.id })
+          const transactions = (transactionsData || []).map((t) =>
+            normalizeTransaction({
+              ...t,
+              id: t.id,
+              date: t.date ? new Date(t.date) : t.created_at ? new Date(t.created_at) : new Date(),
+            })
           );
           dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactions });
-        },
-        error: (error) => {
-          console.error('Transactions listener error:', error);
+        } catch (error) {
           if (isMounted) handleFetchError(error, 'transactions');
-        },
-      });
+        }
+      };
 
-      // Budgets listener
-      const budgetsQuery = query(
-        collection(db, 'budgets'),
-        where('uid', '==', user.uid),
-        orderBy('createdAt', 'desc')
-      );
+      // Initial fetch for budgets
+      const fetchBudgetsOnce = async () => {
+        try {
+          const { data: budgetsData, error: budgetsError } = await supabase
+            .from('budgets')
+            .select('*')
+            .eq('uid', user.id)
+            .order('created_at', { ascending: false });
+          if (budgetsError) throw budgetsError;
 
-      unsubscribeBudgets = onSnapshot(budgetsQuery, {
-        next: (snapshot) => {
-          if (!isMounted) return;
-          const budgets = snapshot.docs
+          const budgets = (budgetsData || [])
             .map((doc) => ({
-              ...doc.data(),
+              ...doc,
               id: doc.id,
-              amount: Number(doc.data().amount),
-              createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt),
-              updatedAt: doc.data().updatedAt?.toDate?.() || new Date(doc.data().updatedAt),
+              amount: Number(doc.amount),
+              createdAt: doc.created_at ? new Date(doc.created_at) : new Date(doc.createdAt),
+              updatedAt: doc.updated_at ? new Date(doc.updated_at) : new Date(doc.updatedAt),
             }))
             .filter((budget) => budget.category && !isNaN(budget.amount));
           dispatch({ type: ACTIONS.SET_BUDGETS, payload: budgets });
           dispatch({ type: ACTIONS.SET_ERROR, payload: null });
-        },
-        error: (error) => {
-          console.error('Budgets listener error:', error);
+        } catch (error) {
           if (isMounted) handleFetchError(error, 'budgets');
-        },
-      });
+        }
+      };
+
+      // Fetch both once (run inside an async function to avoid top-level await)
+      (async () => {
+        try {
+          await Promise.all([fetchTransactionsOnce(), fetchBudgetsOnce()]);
+        } catch (error) {
+          if (isMounted) handleFetchError(error, 'setup');
+        }
+      })();
+
+      // Realtime subscriptions using Supabase Realtime
+      const transactionsChannel = supabase
+        .channel(`public:transactions:uid=${user.id}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'transactions', filter: `uid=eq.${user.id}` },
+          () => {
+            // For robustness, re-fetch (could patch state from payload for better perf)
+            fetchTransactionsOnce();
+          }
+        )
+        .subscribe();
+
+      const budgetsChannel = supabase
+        .channel(`public:budgets:uid=${user.id}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'budgets', filter: `uid=eq.${user.id}` },
+          () => {
+            fetchBudgetsOnce();
+          }
+        )
+        .subscribe();
+
+      // Replace cleanup handles
+      unsubscribeTransactions = () => transactionsChannel.unsubscribe();
+      unsubscribeBudgets = () => budgetsChannel.unsubscribe();
 
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     } catch (error) {
@@ -262,7 +308,7 @@ export const FinanceProvider = ({ children }) => {
       isMounted = false;
       cleanupListeners();
     };
-  }, [user, handleFetchError]);
+  }, [user, handleFetchError, retryCount]);
 
   // Action creators
   const setLoading = (loading) => dispatch({ type: ACTIONS.SET_LOADING, payload: loading });
@@ -270,20 +316,11 @@ export const FinanceProvider = ({ children }) => {
     dispatch({ type: ACTIONS.SET_TRANSACTIONS, payload: transactions });
   const addTransaction = async (transaction) => {
     try {
-      if (!user) {
-        throw new Error('No authenticated user found');
+      if (!user || !user.id) {
+        throw new Error('User must be authenticated to add a transaction');
       }
-
-      if (!user.uid) {
-        throw new Error('User ID is missing');
-      }
-
-      const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
 
       console.log('Adding transaction:', transaction);
-      console.log('Current user:', user);
-      console.log('User ID:', user.uid);
-      console.log('Using database instance:', db);
 
       // Validate transaction data
       if (!transaction.amount || isNaN(transaction.amount)) {
@@ -298,48 +335,42 @@ export const FinanceProvider = ({ children }) => {
 
       const transactionData = {
         ...transaction,
-        uid: user.uid,
-        createdAt: serverTimestamp(),
+        uid: user.id,
         amount: Number(transaction.amount),
-        updatedAt: serverTimestamp(),
+        date:
+          transaction.date instanceof Date
+            ? transaction.date.toISOString()
+            : new Date(transaction.date).toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
-      console.log('Preparing to save transaction data:', transactionData);
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert(transactionData)
+        .select()
+        .single();
+      if (error) throw error;
 
-      const docRef = await addDoc(collection(db, 'transactions'), transactionData);
-
-      console.log('Transaction added with ID:', docRef.id);
-
-      // Add to local state with the generated ID
-      const newTransaction = normalizeTransaction({
-        ...transactionData,
-        id: docRef.id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
+      const newTransaction = normalizeTransaction({ ...data, id: data.id });
       dispatch({ type: ACTIONS.ADD_TRANSACTION, payload: newTransaction });
-      console.log('Local state updated with new transaction');
 
       return newTransaction;
     } catch (error) {
       console.error('Error adding transaction:', error);
-      console.error('Error details:', error.message);
       dispatch({ type: ACTIONS.SET_ERROR, payload: `Failed to add transaction: ${error.message}` });
       throw error;
     }
   };
   const updateTransaction = async (transaction) => {
     try {
-      if (!user || !user.uid) {
+      if (!user || !user.id) {
         throw new Error('User must be authenticated to update a transaction');
       }
 
       if (!transaction.id) {
         throw new Error('Transaction ID is required for updates');
       }
-
-      const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
 
       // Validate transaction data
       if (!transaction.amount || isNaN(transaction.amount)) {
@@ -355,23 +386,26 @@ export const FinanceProvider = ({ children }) => {
       // Prepare update data
       const updateData = {
         ...transaction,
-        uid: user.uid,
+        uid: user.id,
         amount: Number(transaction.amount),
-        updatedAt: serverTimestamp(),
+        date:
+          transaction.date instanceof Date
+            ? transaction.date.toISOString()
+            : new Date(transaction.date).toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
       console.log('Updating transaction with ID:', transaction.id);
-      console.log('Update data:', updateData);
 
-      // Update in Firestore
-      await updateDoc(doc(db, 'transactions', transaction.id), updateData);
+      const { data, error } = await supabase
+        .from('transactions')
+        .update(updateData)
+        .eq('id', transaction.id)
+        .select()
+        .single();
+      if (error) throw error;
 
-      // Update local state with the new data
-      const updatedTransaction = normalizeTransaction({
-        ...updateData,
-        id: transaction.id,
-        updatedAt: new Date(),
-      });
+      const updatedTransaction = normalizeTransaction({ ...data, id: data.id });
 
       dispatch({ type: ACTIONS.UPDATE_TRANSACTION, payload: updatedTransaction });
       console.log('Transaction updated successfully');
@@ -389,27 +423,23 @@ export const FinanceProvider = ({ children }) => {
   };
   const deleteTransaction = async (id) => {
     try {
-      if (!user || !user.uid) {
+      if (!user || !user.id) {
         throw new Error('User must be authenticated to delete a transaction');
       }
 
-      const { deleteDoc, doc, getDoc } = await import('firebase/firestore');
-
-      // First, get the document to verify ownership
-      const transactionRef = doc(db, 'transactions', id);
-      const transactionDoc = await getDoc(transactionRef);
-
-      if (!transactionDoc.exists()) {
-        throw new Error('Transaction not found');
-      }
-
-      const transactionData = transactionDoc.data();
-      if (transactionData.uid !== user.uid) {
+      // Verify ownership
+      const { data: existing, error: getError } = await supabase
+        .from('transactions')
+        .select('uid')
+        .eq('id', id)
+        .single();
+      if (getError) throw getError;
+      if (!existing || existing.uid !== user.id)
         throw new Error('Unauthorized to delete this transaction');
-      }
 
       console.log('Deleting transaction with ID:', id);
-      await deleteDoc(transactionRef);
+      const { error: delError } = await supabase.from('transactions').delete().eq('id', id);
+      if (delError) throw delError;
 
       // Update local state
       dispatch({ type: ACTIONS.DELETE_TRANSACTION, payload: id });
@@ -431,40 +461,33 @@ export const FinanceProvider = ({ children }) => {
 
   const addBudget = async (budget) => {
     try {
-      if (!user || !user.uid) {
+      if (!user || !user.id) {
         throw new Error('User must be authenticated to add a budget');
       }
 
-      const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
       console.log('Adding budget:', budget);
 
       // Prepare budget data
       const budgetData = {
         ...budget,
-        uid: user.uid,
+        uid: user.id,
         amount: Number(budget.amount),
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        // Ensure all required fields are present
-        category: budget.category,
-        period: budget.period || 'monthly', // Default to monthly if not specified
+        period: budget.period || 'monthly',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
-      console.log('Prepared budget data:', budgetData);
+      const { data, error } = await supabase.from('budgets').insert(budgetData).select().single();
+      if (error) throw error;
 
-      const docRef = await addDoc(collection(db, 'budgets'), budgetData);
-      console.log('Budget added with ID:', docRef.id);
-
-      // Create the complete budget object for local state
       const newBudget = {
-        ...budgetData,
-        id: docRef.id,
-        amount: Number(budgetData.amount), // Ensure amount is a number
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        ...data,
+        id: data.id,
+        amount: Number(data.amount),
+        createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+        updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(),
       };
 
-      // Update local state immediately
       dispatch({ type: ACTIONS.ADD_BUDGET, payload: newBudget });
       console.log('Local state updated with new budget:', newBudget);
 
@@ -479,7 +502,7 @@ export const FinanceProvider = ({ children }) => {
 
   const updateBudget = async (budget) => {
     try {
-      if (!user || !user.uid) {
+      if (!user || !user.id) {
         throw new Error('User must be authenticated to update a budget');
       }
 
@@ -487,27 +510,30 @@ export const FinanceProvider = ({ children }) => {
         throw new Error('Budget ID is required for updates');
       }
 
-      const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
-
       // Prepare update data
       const updateData = {
         ...budget,
-        uid: user.uid,
+        uid: user.id,
         amount: Number(budget.amount),
-        updatedAt: serverTimestamp(),
+        updated_at: new Date().toISOString(),
       };
 
       console.log('Updating budget with ID:', budget.id);
-      console.log('Update data:', updateData);
 
-      // Update in Firestore
-      await updateDoc(doc(db, 'budgets', budget.id), updateData);
+      const { data, error } = await supabase
+        .from('budgets')
+        .update(updateData)
+        .eq('id', budget.id)
+        .select()
+        .single();
+      if (error) throw error;
 
-      // Update local state with the new data
       const updatedBudget = {
-        ...updateData,
-        id: budget.id,
-        updatedAt: new Date(),
+        ...data,
+        id: data.id,
+        amount: Number(data.amount),
+        createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+        updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(),
       };
 
       dispatch({ type: ACTIONS.UPDATE_BUDGET, payload: updatedBudget });
@@ -524,29 +550,24 @@ export const FinanceProvider = ({ children }) => {
 
   const deleteBudget = async (id) => {
     try {
-      if (!user || !user.uid) {
+      if (!user || !user.id) {
         throw new Error('User must be authenticated to delete a budget');
       }
 
-      const { doc, deleteDoc, getDoc } = await import('firebase/firestore');
-
-      // First, get the document to verify ownership
-      const budgetRef = doc(db, 'budgets', id);
-      const budgetDoc = await getDoc(budgetRef);
-
-      if (!budgetDoc.exists()) {
-        throw new Error('Budget not found');
-      }
-
-      const budgetData = budgetDoc.data();
-      if (budgetData.uid !== user.uid) {
+      // Verify ownership
+      const { data: existing, error: getError } = await supabase
+        .from('budgets')
+        .select('uid')
+        .eq('id', id)
+        .single();
+      if (getError) throw getError;
+      if (!existing || existing.uid !== user.id)
         throw new Error('Unauthorized to delete this budget');
-      }
 
       console.log('Deleting budget with ID:', id);
-      await deleteDoc(budgetRef);
+      const { error: delError } = await supabase.from('budgets').delete().eq('id', id);
+      if (delError) throw delError;
 
-      // Update local state
       dispatch({ type: ACTIONS.DELETE_BUDGET, payload: id });
       console.log('Budget deleted successfully');
     } catch (error) {
@@ -627,14 +648,7 @@ export const FinanceProvider = ({ children }) => {
 
   return (
     <FinanceContext.Provider value={value}>
-      {state.error && (
-        <RetryError
-          error={state.error}
-          onRetry={() => {
-            clearError();
-          }}
-        />
-      )}
+      {state.error && <RetryError error={state.error} onRetry={retryFetch} />}
       {children}
     </FinanceContext.Provider>
   );

@@ -2,10 +2,10 @@
 
 [![React](https://img.shields.io/badge/React-19.1.1-blue.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.1.14-646CFF.svg)](https://vitejs.dev/)
-[![Firebase](https://img.shields.io/badge/Firebase-12.4.0-orange.svg)](https://firebase.google.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-1.0.0-blue.svg)](https://supabase.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.18-38B2AC.svg)](https://tailwindcss.com/)
 
-> A modern, responsive finance tracking application built with React 19, Firebase, and Tailwind CSS. Manage transactions, set budgets, visualize spending patterns, and achieve financial wellness.
+> A modern, responsive finance tracking application built with React 19, Supabase, and Tailwind CSS. Manage transactions, set budgets, visualize spending patterns, and achieve financial wellness.
 
 ## ✨ Features
 
@@ -13,9 +13,9 @@
 - **Transaction Management** - Add, edit, and delete income/expense transactions
 - **Smart Budgeting** - Category-based budgets with visual progress tracking
 - **Interactive Charts** - Beautiful charts powered by Chart.js and Recharts
-- **Secure Authentication** - Firebase-powered user authentication
+- **Secure Authentication** - Supabase-powered user authentication
 - **Responsive Design** - Works perfectly on all devices
-- **Real-time Updates** - Live data synchronization with Firestore
+- **Real-time Updates** - Live data synchronization with Supabase
 
 ## 🛠️ Tech Stack
 
@@ -30,9 +30,7 @@
 
 ### Backend & Database
 
-- **Firebase** - Backend-as-a-Service platform
-  - Firestore for real-time database
-  - Authentication for user management
+- **Supabase** - Postgres + Realtime + Auth (recommended tables: `transactions`, `budgets`, `expenses`)
 - **Axios** - HTTP client for API requests
 
 ### Charts & Visualization
@@ -53,7 +51,8 @@
 ### Prerequisites
 
 - Node.js (v16+)
-- Firebase account
+- Supabase account
+- Create `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
 
 ### Installation
 
@@ -63,11 +62,24 @@ cd finance-tracker
 npm install
 ```
 
-### Setup Firebase
+### Setup Supabase
 
-1. Create Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Enable Firestore Database and Authentication
-3. Add your config to `src/lib/firebase.js`
+1. Create a Supabase project at https://app.supabase.com/
+2. Create the tables `transactions`, `budgets`, `expenses` (fields: `id`, `uid`, `amount`, `date`/`created_at`, `updated_at`, etc). Use SQL or Table Editor.
+3. In your project root create a `.env.local` file and add (example provided in `.env.example`):
+
+```
+VITE_SUPABASE_URL=https://<your-project>.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_...
+```
+
+> **Important:** Do **not** commit `.env.local`. Add your Supabase **service_role** key only to a server-side environment (e.g., your backend or server functions) — never expose it to client-side code.
+
+4. Use `src/lib/supabaseClient.js` to initialize Supabase client (already included in project). The client reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from environment variables.
+
+5. Create tables and policies: run the SQL in `supabase/schema.sql` in your Supabase project's SQL editor to create the `transactions`, `budgets`, and `expenses` tables and RLS policies.
+
+6. Start the dev server and test flows locally (registration, login, add/edit/delete transactions and budgets).
 
 ### Run Development Server
 

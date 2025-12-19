@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../lib/firebase.js';
+import authService from '../services/auth';
 
 // Login Component
 const Login = () => {
@@ -12,7 +11,7 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await authService.login(email, password);
     } catch (err) {
       setError(err.message);
     }
@@ -58,7 +57,7 @@ const Signup = () => {
     e.preventDefault();
     setError('');
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      await authService.register(email, password);
     } catch (err) {
       setError(err.message);
     }

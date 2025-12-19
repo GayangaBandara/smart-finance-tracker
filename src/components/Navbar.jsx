@@ -1,14 +1,12 @@
 import React from 'react';
-import { signOut } from 'firebase/auth';
-import { auth } from '../lib/firebase.js';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await logout();
     } catch (error) {
       console.error('Logout Error:', error.message);
     }
