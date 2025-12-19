@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { useAuth } from './AuthContext';
 import { supabase } from '../lib/supabaseClient';
-import RetryError from '../components/common/RetryError';
+import RetryError from '../components/common/RetryError.jsx';
 
 // Initial state
 const initialState = {
