@@ -5,7 +5,7 @@ const Button = ({
   onClick,
   type = 'button',
   variant = 'primary',
-  size = 'md',
+  size = 'sm',
   disabled = false,
   className = '',
   ariaLabel,
@@ -16,27 +16,27 @@ const Button = ({
   ...props
 }) => {
   const baseClasses =
-    'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-offset-0 relative overflow-hidden';
+    'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-1 relative overflow-hidden';
 
   const variantClasses = {
     primary:
-      'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white focus:ring-indigo-500/20 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+      'bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500/20 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed',
     secondary:
-      'bg-white/8 hover:bg-white/15 backdrop-blur-sm border border-white/15 hover:border-white/25 text-gray-700 hover:text-gray-900 focus:ring-white/30 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed',
+      'bg-gray-100 hover:bg-gray-200 text-gray-700 focus:ring-gray-500/20 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed',
     danger:
-      'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white focus:ring-red-500/20 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+      'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500/20 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed',
     success:
-      'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white focus:ring-green-500/20 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+      'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500/20 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed',
     outline:
-      'border-2 border-indigo-500 text-indigo-600 hover:bg-indigo-500 hover:text-white focus:ring-indigo-500/20 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed',
+      'border border-gray-300 hover:border-indigo-500 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed',
     ghost:
-      'hover:bg-white/10 text-gray-600 hover:text-gray-900 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed',
+      'hover:bg-gray-100 text-gray-600 hover:text-gray-900 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed',
   };
 
   const sizeClasses = {
-    sm: 'px-4 py-2 text-sm min-h-[40px] gap-2',
-    md: 'px-6 py-3 text-base min-h-[48px] gap-3',
-    lg: 'px-8 py-4 text-lg min-h-[56px] gap-4',
+    sm: 'px-3 py-1.5 text-sm min-h-[32px] gap-1.5 rounded-md',
+    md: 'px-4 py-2 text-sm min-h-[36px] gap-2 rounded-lg',
+    lg: 'px-6 py-2.5 text-base min-h-[44px] gap-2.5 rounded-lg',
   };
 
   const disabledClasses = disabled ? 'cursor-not-allowed opacity-50' : '';
@@ -54,16 +54,9 @@ const Button = ({
       aria-pressed={ariaPressed}
       {...props}
     >
-      {/* Shimmer effect for primary buttons */}
-      {variant === 'primary' && (
-        <>
-          <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-        </>
-      )}
-
-      <div className="relative z-10 flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-1.5">
         {loading && (
-          <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
+          <div className="animate-spin rounded-full h-3 w-3 border-2 border-current border-t-transparent" />
         )}
         {leftIcon && !loading && <span className="flex-shrink-0">{leftIcon}</span>}
         <span>{children}</span>

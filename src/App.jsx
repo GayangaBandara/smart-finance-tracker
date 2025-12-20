@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { FinanceProvider } from './context/FinanceContext.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 import Header from './components/layout/Header.jsx';
 import Sidebar from './components/layout/Sidebar.jsx';
 import Footer from './components/layout/Footer.jsx';
@@ -12,6 +13,7 @@ import Terms from './pages/Terms.jsx';
 import Privacy from './pages/Privacy.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Reports from './pages/Reports.jsx';
+import Settings from './pages/Settings.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import TransactionList from './components/transactions/TransactionList.jsx';
 import TransactionForm from './components/transactions/TransactionForm.jsx';
@@ -38,106 +40,104 @@ const AppLayout = ({ children }) => {
 
 const App = () => {
   return (
-    <FinanceProvider>
-      <Router>
-        <div className="App">
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
+    <ThemeProvider>
+      <FinanceProvider>
+        <Router>
+          <div className="App">
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
 
-            {/* Protected routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Dashboard />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/transactions"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <div className="space-y-6">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h1 className="text-3xl font-bold text-gray-900">Transactions</h1>
-                          <p className="text-gray-600">Manage your income and expenses</p>
+              {/* Protected routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Dashboard />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/transactions"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h1 className="text-3xl font-bold text-gray-900">Transactions</h1>
+                            <p className="text-gray-600">Manage your income and expenses</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                          <div className="lg:col-span-1">
+                            <TransactionForm />
+                          </div>
+                          <div className="lg:col-span-2">
+                            <TransactionList />
+                          </div>
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-1">
-                          <TransactionForm />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/budgets"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h1 className="text-3xl font-bold text-gray-900">Budgets</h1>
+                            <p className="text-gray-600">Set and track your spending limits</p>
+                          </div>
                         </div>
-                        <div className="lg:col-span-2">
-                          <TransactionList />
-                        </div>
-                      </div>
-                    </div>
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/budgets"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <div className="space-y-6">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h1 className="text-3xl font-bold text-gray-900">Budgets</h1>
-                          <p className="text-gray-600">Set and track your spending limits</p>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <BudgetForm />
+                          <BudgetOverview />
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <BudgetForm />
-                        <BudgetOverview />
-                      </div>
-                    </div>
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reports"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Reports />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <div className="space-y-6">
-                      <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-                      <p className="text-gray-600">Manage your account preferences</p>
-                      {/* Settings components would go here */}
-                    </div>
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reports"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Reports />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Settings />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Redirect unknown routes to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-      </Router>
-    </FinanceProvider>
+              {/* Redirect unknown routes to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+        </Router>
+      </FinanceProvider>
+    </ThemeProvider>
   );
 };
 

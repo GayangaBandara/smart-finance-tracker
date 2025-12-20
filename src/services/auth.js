@@ -58,13 +58,38 @@ export const authService = {
     return subscription;
   },
 
-  updateUserProfile: async (updates) => {
+  updateUserProfile: async ({ email, ...metadata }) => {
     try {
-      const { data, error } = await supabase.auth.updateUser({ data: updates });
+      // email must be passed at top-level, metadata goes into `data`
+      const payload = {};
+      if (email) payload.email = email;
+      if (Object.keys(metadata).length) payload.data = metadata;
+      const { data, error } = await supabase.auth.updateUser(payload);
       if (error) throw error;
       return { success: true, user: data.user };
     } catch (err) {
       throw new Error(err.message || 'Failed to update profile');
+    }
+  },
+
+  changePassword: async (newPassword) => {
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      return { success: true };
+    } catch (err) {
+      throw new Error(err.message || 'Failed to change password');
+    }
+  },
+
+  deleteUserData: async () => {
+    try {
+      // Calls the Postgres RPC function 'delete_user_data' which removes rows for the current user
+      const { error } = await supabase.rpc('delete_user_data');
+      if (error) throw error;
+      return { success: true };
+    } catch (err) {
+      throw new Error(err.message || 'Failed to delete user data');
     }
   },
 };

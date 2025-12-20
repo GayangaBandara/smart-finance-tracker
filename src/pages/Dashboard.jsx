@@ -524,29 +524,69 @@ const Dashboard = () => {
         </motion.div>
       </motion.div>
 
-      {/* Charts placeholder and Transactions */}
-      <motion.div
-        className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6"
-        variants={containerVariants}
-      >
-        {/* Charts removed due to build error */}
-
-        {/* Transactions */}
-        <motion.div className="rounded-2xl p-4 md:p-6 lg:p-8 glass-card" variants={itemVariants}>
+      {/* Transactions Section */}
+      <motion.div className="rounded-2xl p-4 md:p-6 lg:p-8 glass-card" variants={itemVariants}>
+        <motion.div className="flex flex-col lg:flex-row gap-8" variants={containerVariants}>
+          {/* Add Transaction Form */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: shouldReduceMotion ? 0 : 0.7, duration: 0.3 }}
+            className="w-full lg:w-1/2"
+            variants={cardVariants}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: shouldReduceMotion ? 0 : 0.7, duration: 0.4 }}
           >
-            <TransactionForm />
+            <div className="mb-6">
+              <motion.h3
+                className="text-xl md:text-2xl font-bold text-gray-800 mb-2"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: shouldReduceMotion ? 0 : 0.75, duration: 0.3 }}
+              >
+                Add Transaction
+              </motion.h3>
+              <motion.p
+                className="text-gray-600 text-sm md:text-base"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: shouldReduceMotion ? 0 : 0.8, duration: 0.3 }}
+              >
+                Record your income and expenses
+              </motion.p>
+            </div>
+            <GlassCard variant="elevated" className="h-fit">
+              <TransactionForm />
+            </GlassCard>
           </motion.div>
+
+          {/* Transaction History */}
           <motion.div
-            className="mt-4"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: shouldReduceMotion ? 0 : 0.75, duration: 0.3 }}
+            className="w-full lg:w-1/2"
+            variants={cardVariants}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: shouldReduceMotion ? 0 : 0.75, duration: 0.4 }}
           >
-            <TransactionList />
+            <div className="mb-6">
+              <motion.h3
+                className="text-xl md:text-2xl font-bold text-gray-800 mb-2"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: shouldReduceMotion ? 0 : 0.8, duration: 0.3 }}
+              >
+                Transaction History
+              </motion.h3>
+              <motion.p
+                className="text-gray-600 text-sm md:text-base"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: shouldReduceMotion ? 0 : 0.85, duration: 0.3 }}
+              >
+                View and manage your transactions
+              </motion.p>
+            </div>
+            <GlassCard variant="elevated" className="h-fit">
+              <TransactionList />
+            </GlassCard>
           </motion.div>
         </motion.div>
       </motion.div>

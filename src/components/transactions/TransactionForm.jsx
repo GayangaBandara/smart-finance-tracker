@@ -66,18 +66,7 @@ const TransactionForm = ({ onSuccess }) => {
   };
 
   return (
-    <div className="glass-card p-8 hover-lift">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Add Transaction</h2>
-          <p className="text-gray-600">Track your income and expenses</p>
-        </div>
-        <div className="status-badge">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="ml-2 text-xs font-medium">Ready</span>
-        </div>
-      </div>
-
+    <div>
       {error && (
         <div className="status-badge status-danger mb-6">
           <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -100,7 +89,7 @@ const TransactionForm = ({ onSuccess }) => {
               className={`relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                 watch('type') === 'expense'
                   ? 'border-red-500 bg-red-50 text-red-700'
-                  : 'border-gray-200 bg-white/5 hover:border-gray-300'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
               <input
@@ -123,7 +112,7 @@ const TransactionForm = ({ onSuccess }) => {
               className={`relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                 watch('type') === 'income'
                   ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-gray-200 bg-white/5 hover:border-gray-300'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
               <input
@@ -169,7 +158,7 @@ const TransactionForm = ({ onSuccess }) => {
           <div className="relative">
             <select
               {...register('category')}
-              className="input-glass appearance-none cursor-pointer"
+              className="input-glass appearance-none cursor-pointer w-full"
             >
               <option value="">Select a category</option>
               {(categories[watch('type') || 'expense'] || []).map((cat) => (
@@ -201,7 +190,7 @@ const TransactionForm = ({ onSuccess }) => {
         <div className="form-group">
           <label className="form-label">Date</label>
           <div className="relative">
-            <input type="date" {...register('date')} className="input-glass" />
+            <input type="date" {...register('date')} className="input-glass w-full" />
             <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
               <svg
                 className="w-5 h-5 text-gray-400"
@@ -228,7 +217,7 @@ const TransactionForm = ({ onSuccess }) => {
             {...register('note')}
             rows="3"
             placeholder="Add a note about this transaction..."
-            className="input-glass resize-none"
+            className="input-glass resize-none w-full"
           />
         </div>
 

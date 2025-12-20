@@ -14,15 +14,18 @@ const Input = ({
   ariaDescribedby,
   leftIcon,
   rightIcon,
+  disabled = false,
   ...props
 }) => {
   const baseClasses = 'input-glass';
 
   const errorClasses = error
-    ? 'border-red-500/50 focus:ring-red-500/20 focus:border-red-500/50'
+    ? 'border-red-500/50 focus:ring-red-500/20 focus:border-red-500/50 bg-red-50/30'
     : '';
 
-  const classes = `${baseClasses} ${errorClasses} ${className}`;
+  const disabledClasses = disabled ? 'opacity-60 cursor-not-allowed bg-gray-100' : '';
+
+  const classes = `${baseClasses} ${errorClasses} ${disabledClasses} ${className}`;
 
   const errorId = error ? `${id}-error` : undefined;
   const finalAriaDescribedby = ariaDescribedby || errorId;
@@ -51,7 +54,8 @@ const Input = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`${classes} ${leftIcon ? 'pl-12' : ''} ${rightIcon ? 'pr-12' : ''}`}
+          disabled={disabled}
+          className={`${classes} ${leftIcon ? 'pl-12' : 'pl-4'} ${rightIcon ? 'pr-12' : 'pr-4'} py-3 w-full text-base`}
           aria-label={ariaLabel}
           aria-describedby={finalAriaDescribedby}
           aria-required={required}

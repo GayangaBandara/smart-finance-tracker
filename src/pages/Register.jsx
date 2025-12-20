@@ -60,8 +60,8 @@ const Register = () => {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4">
+        <form className="mt-8 space-y-8" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-5">
             <Input
               label="Email address"
               type="email"
