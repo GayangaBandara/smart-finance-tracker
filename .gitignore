@@ -11,9 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
-# Local env files (don't commit credentials)
-.env.local
-.env.*.local
+
 
 # Editor directories and files
 .vscode/*
