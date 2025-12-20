@@ -27,11 +27,11 @@ const AppLayout = ({ children }) => {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Header onToggleSidebar={toggleSidebar} />
-      <div className="flex">
+      <div className="flex flex-1">
         <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 md:ml-64">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 md:ml-64 w-full">{children}</main>
       </div>
       <Footer />
     </div>
