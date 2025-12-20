@@ -86,23 +86,6 @@ const Charts = ({ expenses = [] }) => {
     ],
   };
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          usePointStyle: true,
-          padding: 20,
-          font: {
-            size: 12,
-          },
-        },
-      },
-    },
-  };
-
   const enhancedChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -195,7 +178,7 @@ const Charts = ({ expenses = [] }) => {
 
   const enhancedLineChartData = {
     ...lineChartData,
-    datasets: lineChartData.datasets.map((dataset, index) => ({
+    datasets: lineChartData.datasets.map((dataset) => ({
       ...dataset,
       borderWidth: 3,
       borderColor: dataset.label === 'Income' ? '#10b981' : '#ef4444',

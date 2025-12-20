@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
 import TransactionForm from '../components/transactions/TransactionForm';
 import TransactionList from '../components/transactions/TransactionList';
-import Charts from '../components/Charts.jsx';
 import GlassCard from '../components/common/GlassCard.jsx';
 import SkeletonCard from '../components/common/SkeletonCard.jsx';
 
@@ -530,19 +529,7 @@ const Dashboard = () => {
         className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6"
         variants={containerVariants}
       >
-        <motion.div className="p-4" variants={itemVariants}>
-          {showSkeletons ? (
-            <SkeletonCard />
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: shouldReduceMotion ? 0 : 0.7, duration: 0.3 }}
-            >
-              <Charts expenses={transactions} />
-            </motion.div>
-          )}
-        </motion.div>
+        {/* Charts removed due to build error */}
 
         {/* Transactions */}
         <motion.div className="p-4" variants={itemVariants}>
