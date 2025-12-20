@@ -97,46 +97,41 @@ const TransactionList = () => {
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 lg:mb-0">Transactions</h2>
-
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Transactions</h2>
         {/* Filters */}
-        <div className="flex flex-col space-y-3 w-full lg:w-auto lg:flex-row lg:space-y-0 lg:gap-4">
-          <div className="relative">
+        <div className="flex flex-col gap-3 w-full md:w-auto md:flex-row md:items-center md:gap-4">
+          <div className="relative w-full md:w-64">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search transactions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full lg:w-64"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full"
             />
           </div>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="">All Types</option>
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
-          </div>
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full md:w-auto"
+          >
+            <option value="">All Categories</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full md:w-auto"
+          >
+            <option value="">All Types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
         </div>
       </div>
 
@@ -154,7 +149,9 @@ const TransactionList = () => {
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-800 truncate">{transaction.category}</h3>
+                  <h3 className="text-lg md:text-xl font-bold text-gray-800 truncate">
+                    {transaction.category}
+                  </h3>
                   <p className="text-sm text-gray-600">{formatDate(transaction.date)}</p>
                 </div>
                 <div className="ml-3 flex-shrink-0">
@@ -168,12 +165,12 @@ const TransactionList = () => {
                 </div>
               )}
 
-              <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleEdit(transaction)}
-                  className="flex-1 sm:flex-none p-2"
+                  className="w-full sm:w-auto p-2"
                 >
                   <Edit2 size={16} className="w-4 h-4" />
                   <span className="ml-1 hidden sm:inline">Edit</span>
@@ -182,7 +179,7 @@ const TransactionList = () => {
                   variant="danger"
                   size="sm"
                   onClick={() => handleDelete(transaction.id)}
-                  className="flex-1 sm:flex-none p-2"
+                  className="w-full sm:w-auto p-2"
                 >
                   <Trash2 size={16} className="w-4 h-4" />
                   <span className="ml-1 hidden sm:inline">Delete</span>

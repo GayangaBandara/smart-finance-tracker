@@ -1,21 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* DEPRECATED: Consolidated to `src/styles/index.css` (now the single source of CSS). */
+/* To fully remove this file, delete it after confirming the app loads with the consolidated styles. */
 
 a {
   font-weight: 500;
@@ -84,6 +68,19 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+
+  /* Light mode: clean navbar & sidebar */
+  .navbar-bg {
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    color: #213547;
+  }
+  .sidebar-bg,
+  .sidebar-mobile-bg {
+    background: rgba(255, 255, 255, 0.96);
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    color: #213547;
+  }
 }
 
 /* Enhanced Glassmorphism Utilities */
@@ -124,6 +121,30 @@ button:focus-visible {
       0 8px 32px rgba(0, 0, 0, 0.3),
       0 2px 8px rgba(0, 0, 0, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Navigation bar background - clean & clear glass */
+  .navbar-bg {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Sidebar background */
+  .sidebar-bg {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Mobile sidebar background */
+  .sidebar-mobile-bg {
+    background: rgba(0, 0, 0, 0.68);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .glass-intense {
@@ -448,12 +469,13 @@ button:focus-visible {
   /* Navigation enhancements */
   .nav-item {
     @apply flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300;
-    @apply text-gray-600 hover:text-gray-900 hover:bg-white/10;
+    @apply text-gray-300 hover:text-white hover:bg-white/10;
   }
 
   .nav-item.active {
-    @apply bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-700;
-    @apply border-r-2 border-indigo-500;
+    @apply bg-gradient-to-r from-indigo-500/30 to-purple-500/30 text-white;
+    @apply border-r-2 border-indigo-400;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
   }
 
   /* Mobile-first responsive utilities */

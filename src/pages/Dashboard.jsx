@@ -532,7 +532,7 @@ const Dashboard = () => {
         {/* Charts removed due to build error */}
 
         {/* Transactions */}
-        <motion.div className="p-4" variants={itemVariants}>
+        <motion.div className="rounded-2xl p-4 md:p-6 lg:p-8 glass-card" variants={itemVariants}>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

@@ -332,3 +332,149 @@ section {
     border: 1px solid #e5e7eb !important;
   }
 }
+/* Utility layer for glass styles, navbar & sidebar (merged from duplicate file) */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  }
+
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.04),
+      0 2px 8px rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-card-dark {
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .navbar-bg {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .sidebar-bg {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .sidebar-mobile-bg {
+    background: rgba(0, 0, 0, 0.68);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .glass-intense {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-indigo {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hover-lift:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.1),
+      0 8px 16px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .hover-glow {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hover-glow:hover {
+    box-shadow:
+      0 0 20px rgba(99, 102, 241, 0.3),
+      0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .interactive-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .interactive-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+  }
+  .interactive-card:hover::before {
+    left: 100%;
+  }
+  .interactive-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 16px 32px rgba(0, 0, 0, 0.08),
+      0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+}
+
+/* Light mode overrides for navbar & sidebar */
+@media (prefers-color-scheme: light) {
+  .navbar-bg {
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    color: #213547;
+  }
+  .sidebar-bg,
+  .sidebar-mobile-bg {
+    background: rgba(255, 255, 255, 0.96);
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    color: #213547;
+  }
+}

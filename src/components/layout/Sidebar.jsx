@@ -24,7 +24,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
   // Desktop / large: static sidebar
   const staticSidebar = (
-    <aside className="hidden md:block glass-card border-r border-white/20 w-64 h-screen fixed top-16 left-0 z-10">
+    <aside className="hidden md:block sidebar-bg border-r border-white/20 w-64 h-screen fixed top-16 left-0 z-10">
       <div className="p-6">
         <div className="mb-6">
           <h2 className="text-sm font-bold text-gray-600 uppercase tracking-wider">Navigation</h2>
@@ -104,7 +104,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
           <motion.aside
             key="drawer"
-            className="fixed right-0 top-0 bottom-0 w-80 glass-card z-50 shadow-2xl p-6 md:hidden"
+            className="fixed right-0 top-0 bottom-0 w-80 sidebar-mobile-bg z-50 shadow-2xl p-6 md:hidden"
             initial="hidden"
             animate="visible"
             exit="exit"
