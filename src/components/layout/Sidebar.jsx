@@ -25,7 +25,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
   // Desktop / large: static sidebar
   const staticSidebar = (
     <aside className="hidden md:block sidebar-bg border-r border-white/20 w-64 h-screen fixed top-16 left-0 z-10">
-      <div className="p-6">
+      <div className="p-6 pb-20">
         <div className="mb-6">
           <h2 className="text-sm font-bold text-gray-600 uppercase tracking-wider">Navigation</h2>
         </div>
@@ -44,7 +44,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
                   <div
                     className={`p-2 rounded-lg transition-all duration-300 ${
                       isActive
-                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
                         : 'bg-white/5 text-gray-600 group-hover:bg-white/10 group-hover:text-gray-900'
                     }`}
                   >
@@ -53,33 +53,21 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
                   <span className="font-medium">{item.label}</span>
                 </div>
                 {isActive && (
-                  <div className="ml-auto w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                  <div className="ml-auto w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Footer section */}
-        <div className="mt-8 pt-6 border-t border-white/10">
+        {/* Footer section - Pinned to bottom */}
+        <div className="absolute bottom-6 left-6 right-6">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-2">
-              <svg
-                className="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
+            <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-full mb-2 overflow-hidden">
+              <img src="/logo.png" alt="Finance Tracker Logo" className="w-6 h-6 object-contain" />
             </div>
-            <p className="text-xs text-gray-500">Finance Tracker</p>
-            <p className="text-xs text-gray-400">v2.0</p>
+            <p className="text-xs text-gray-600 font-semibold">Finance Tracker</p>
+            <p className="text-xs text-gray-500">v2.0</p>
           </div>
         </div>
       </div>
@@ -104,7 +92,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
           <motion.aside
             key="drawer"
-            className="fixed right-0 top-0 bottom-0 w-80 sidebar-mobile-bg z-50 shadow-2xl p-6 md:hidden"
+            className="fixed right-0 top-0 bottom-0 w-80 sidebar-mobile-bg z-50 shadow-2xl p-6 pb-24 md:hidden"
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -118,7 +106,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
           >
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl">
+                <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="none"
@@ -177,7 +165,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
                         <div
                           className={`p-3 rounded-xl transition-all duration-300 ${
                             isActive
-                              ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
                               : 'bg-white/10 text-gray-600 group-hover:bg-white/20 group-hover:text-gray-900'
                           }`}
                         >
@@ -187,7 +175,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
                       </div>
                       {isActive && (
                         <div className="ml-auto">
-                          <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                         </div>
                       )}
                     </Link>
@@ -196,25 +184,18 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
               })}
             </nav>
 
-            {/* Mobile footer */}
+            {/* Mobile footer - Pinned to bottom */}
             <div className="absolute bottom-6 left-6 right-6">
               <div className="glass rounded-xl p-4 text-center">
-                <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-2">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
+                <div className="inline-flex items-center justify-center w-8 h-8 bg-white/20 rounded-full mb-2 overflow-hidden">
+                  <img
+                    src="/logo.png"
+                    alt="Finance Tracker Logo"
+                    className="w-5 h-5 object-contain"
+                  />
                 </div>
-                <p className="text-xs text-gray-500">Finance Tracker v2.0</p>
+                <p className="text-xs text-gray-600 font-semibold">Finance Tracker</p>
+                <p className="text-xs text-gray-500">v2.0</p>
               </div>
             </div>
           </motion.aside>

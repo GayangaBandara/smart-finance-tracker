@@ -23,7 +23,7 @@ const Header = ({ onToggleSidebar }) => {
             <button
               type="button"
               onClick={onToggleSidebar}
-              className="mr-3 inline-flex items-center justify-center p-2 rounded-xl text-gray-600 hover:bg-white/10 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 md:hidden"
+              className="mr-3 inline-flex items-center justify-center p-2 rounded-xl text-gray-600 hover:bg-white/10 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-green-500/20 transition-all duration-300 md:hidden"
               aria-controls="main-menu"
               aria-expanded="false"
               aria-label="Open menu"
@@ -32,7 +32,7 @@ const Header = ({ onToggleSidebar }) => {
             </button>
 
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl">
+              <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
                 <img
                   src="/logo.png"
                   alt="Finance Tracker Logo"
@@ -49,7 +49,7 @@ const Header = ({ onToggleSidebar }) => {
             {user && (
               <>
                 <div className="hidden sm:flex items-center space-x-3 px-4 py-2 bg-white/10 rounded-xl backdrop-blur-sm">
-                  <div className="p-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full">
+                  <div className="p-1.5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full">
                     <User size={16} className="text-white" />
                   </div>
                   <span className="text-sm font-medium text-gray-700">{user.email}</span>

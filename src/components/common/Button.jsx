@@ -20,7 +20,7 @@ const Button = ({
 
   const variantClasses = {
     primary:
-      'bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500/20 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed',
+      'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500/20 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed',
     secondary:
       'bg-gray-100 hover:bg-gray-200 text-gray-700 focus:ring-gray-500/20 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed',
     danger:
@@ -28,7 +28,7 @@ const Button = ({
     success:
       'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500/20 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed',
     outline:
-      'border border-gray-300 hover:border-indigo-500 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed',
+      'border border-gray-300 hover:border-green-500 text-gray-700 hover:text-green-600 hover:bg-green-50 focus:ring-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed',
     ghost:
       'hover:bg-gray-100 text-gray-600 hover:text-gray-900 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed',
   };
