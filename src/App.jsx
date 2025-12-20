@@ -29,9 +29,11 @@ const AppLayout = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Header onToggleSidebar={toggleSidebar} />
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 md:ml-64 w-full">{children}</main>
+        <main className="flex-1 overflow-y-auto md:ml-64 w-full">
+          <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+        </main>
       </div>
       <Footer />
     </div>

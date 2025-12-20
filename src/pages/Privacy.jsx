@@ -5,8 +5,8 @@ import Footer from '../components/layout/Footer';
 
 const Privacy = () => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-1 bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col min-h-screen w-full">
+      <div className="flex-1 bg-gray-50 w-full py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
             <div className="text-center mb-8">
