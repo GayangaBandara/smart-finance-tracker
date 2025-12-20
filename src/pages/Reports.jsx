@@ -87,18 +87,26 @@ const Reports = () => {
   // Category breakdown
   const categoryBreakdown = useMemo(() => {
     const breakdown = filteredTransactions.reduce((acc, t) => {
-      if (!acc[t.category]) {
-        acc[t.category] = { income: 0, expense: 0 };
+      const category = t.category || 'Uncategorized';
+      if (!acc[category]) {
+        acc[category] = { income: 0, expense: 0 };
       }
-      acc[t.category][t.type] += t.amount;
+      if (t.type === 'income') {
+        acc[category].income += Number(t.amount) || 0;
+      } else if (t.type === 'expense') {
+        acc[category].expense += Number(t.amount) || 0;
+      }
       return acc;
     }, {});
 
-    return Object.entries(breakdown).map(([category, amounts]) => ({
-      category,
-      ...amounts,
-      net: amounts.income - amounts.expense,
-    }));
+    return Object.entries(breakdown)
+      .map(([category, amounts]) => ({
+        category,
+        income: amounts.income,
+        expense: amounts.expense,
+        net: amounts.income - amounts.expense,
+      }))
+      .sort((a, b) => b.expense - a.expense);
   }, [filteredTransactions]);
 
   // Monthly trend data
@@ -106,22 +114,24 @@ const Reports = () => {
     const monthlyData = {};
 
     filteredTransactions.forEach((t) => {
-      const month = new Date(t.date).toLocaleDateString('en-US', {
+      const date = new Date(t.date);
+      const month = date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
       });
 
       if (!monthlyData[month]) {
-        monthlyData[month] = { income: 0, expense: 0 };
+        monthlyData[month] = { income: 0, expense: 0, dateObj: date };
       }
       monthlyData[month][t.type] += t.amount;
     });
 
     return Object.entries(monthlyData)
-      .sort(([a], [b]) => new Date(a) - new Date(b))
+      .sort(([, aData], [, bData]) => new Date(aData.dateObj) - new Date(bData.dateObj))
       .map(([month, data]) => ({
         month,
-        ...data,
+        income: data.income,
+        expense: data.expense,
         net: data.income - data.expense,
       }));
   }, [filteredTransactions]);
@@ -131,7 +141,8 @@ const Reports = () => {
     labels: categoryBreakdown.map((item) => item.category),
     datasets: [
       {
-        data: categoryBreakdown.map((item) => item.expense),
+        label: 'Expenses',
+        data: categoryBreakdown.map((item) => Math.max(item.expense, 0)),
         backgroundColor: [
           '#FF6384',
           '#36A2EB',
@@ -141,7 +152,11 @@ const Reports = () => {
           '#FF9F40',
           '#C9CBCF',
           '#FF6384',
+          '#4BC0C0',
+          '#FF9F40',
         ],
+        borderColor: '#fff',
+        borderWidth: 2,
       },
     ],
   };
@@ -151,17 +166,23 @@ const Reports = () => {
     datasets: [
       {
         label: 'Income',
-        data: monthlyTrend.map((item) => item.income),
+        data: monthlyTrend.map((item) => Math.max(item.income, 0)),
         borderColor: 'rgb(34, 197, 94)',
         backgroundColor: 'rgba(34, 197, 94, 0.1)',
-        tension: 0.1,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: 'rgb(34, 197, 94)',
       },
       {
         label: 'Expenses',
-        data: monthlyTrend.map((item) => item.expense),
+        data: monthlyTrend.map((item) => Math.max(item.expense, 0)),
         borderColor: 'rgb(239, 68, 68)',
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        tension: 0.1,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: 'rgb(239, 68, 68)',
       },
     ],
   };
@@ -171,13 +192,17 @@ const Reports = () => {
     datasets: [
       {
         label: 'Income',
-        data: categoryBreakdown.map((item) => item.income),
+        data: categoryBreakdown.map((item) => Math.max(item.income, 0)),
         backgroundColor: 'rgba(34, 197, 94, 0.8)',
+        borderColor: 'rgba(34, 197, 94, 1)',
+        borderWidth: 1,
       },
       {
         label: 'Expenses',
-        data: categoryBreakdown.map((item) => item.expense),
+        data: categoryBreakdown.map((item) => Math.max(item.expense, 0)),
         backgroundColor: 'rgba(239, 68, 68, 0.8)',
+        borderColor: 'rgba(239, 68, 68, 1)',
+        borderWidth: 1,
       },
     ],
   };
@@ -518,7 +543,28 @@ const Reports = () => {
             <div className="h-64 sm:h-80">
               <Line
                 data={lineChartData}
-                options={{ responsive: true, maintainAspectRatio: false }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    },
+                    title: {
+                      display: false,
+                    },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        callback: function (value) {
+                          return '$' + value.toFixed(0);
+                        },
+                      },
+                    },
+                  },
+                }}
               />
             </div>
           </div>
@@ -528,7 +574,29 @@ const Reports = () => {
               Expenses by Category
             </h3>
             <div className="h-64 sm:h-80">
-              <Pie data={pieChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+              <Pie
+                data={pieChartData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'bottom',
+                      labels: {
+                        boxWidth: 12,
+                        padding: 15,
+                      },
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: function (context) {
+                          return '$' + context.parsed.toFixed(2);
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
             </div>
           </div>
         </div>
@@ -538,7 +606,35 @@ const Reports = () => {
             Income vs Expenses by Category
           </h3>
           <div className="h-64 sm:h-80">
-            <Bar data={barChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+            <Bar
+              data={barChartData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function (context) {
+                        return context.dataset.label + ': $' + context.parsed.y.toFixed(2);
+                      },
+                    },
+                  },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function (value) {
+                        return '$' + value.toFixed(0);
+                      },
+                    },
+                  },
+                },
+              }}
+            />
           </div>
         </div>
       </div>
