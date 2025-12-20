@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     chunkSizeWarningLimit: 600,
+    outDir: 'dist',
     // Lazy loading works through React.lazy() and dynamic imports
     // which are automatically code-split by Vite
   },
@@ -16,5 +17,8 @@ export default defineConfig({
     alias: {
       '@lib': '/src/lib',
     },
+  },
+  server: {
+    middlewareMode: false,
   },
 });
