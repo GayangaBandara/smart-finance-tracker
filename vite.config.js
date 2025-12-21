@@ -29,12 +29,12 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
-      'react', 
-      'react-dom', 
+      'react',
+      'react-dom',
       'react-router-dom',
       'chart.js',
       'react-chartjs-2',
-      'lucide-react'
+      'lucide-react',
     ],
     exclude: ['@supabase/supabase-js'],
   },

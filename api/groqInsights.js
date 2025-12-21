@@ -14,12 +14,7 @@ const GROQ_API_KEY = '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';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 // Supported/fallback models (preference order) — can be overridden by the request body:
-const DEFAULT_MODELS = [
-  'llama3-8b-8192',
-  'mixtral-8x7b-8192',
-  'llama3-70b-8192',
-  'gemma-7b'
-];
+const DEFAULT_MODELS = ['llama3-8b-8192', 'mixtral-8x7b-8192', 'llama3-70b-8192', 'gemma-7b'];
 
 // Helper to call Groq with a specific model
 async function callGroqModel(model, payload) {
@@ -27,14 +22,14 @@ async function callGroqModel(model, payload) {
     GROQ_API_URL,
     {
       model,
-      messages: payload.messages
+      messages: payload.messages,
     },
     {
       timeout: 15000,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`
-      }
+        Authorization: `Bearer ${GROQ_API_KEY}`,
+      },
     }
   );
 }
@@ -44,8 +39,8 @@ app.get('/', (req, res) => {
     message: 'Finance Tracker Groq Insights API',
     version: '1.0.0',
     endpoints: {
-      'POST /ai-insight': 'Get AI-powered financial insights from transactions (Groq)'
-    }
+      'POST /ai-insight': 'Get AI-powered financial insights from transactions (Groq)',
+    },
   });
 });
 
@@ -54,7 +49,9 @@ const insightsCache = new Map();
 
 app.post('/ai-insight', async (req, res) => {
   const { transactions } = req.body;
-  console.log(`[AI Insight] request received - transactions: ${Array.isArray(transactions) ? transactions.length : 'invalid'}`);
+  console.log(
+    `[AI Insight] request received - transactions: ${Array.isArray(transactions) ? transactions.length : 'invalid'}`
+  );
 
   if (!transactions || !Array.isArray(transactions)) {
     return res.status(400).json({ error: 'Invalid transactions data.' });
@@ -82,9 +79,12 @@ app.post('/ai-insight', async (req, res) => {
 
   // Allow client to suggest model(s) via `model` or `models` in the request body
   const { model: requestedModel, models: requestedModels } = req.body;
-  const attemptModels = Array.isArray(requestedModels) && requestedModels.length
-    ? requestedModels
-    : (requestedModel ? [requestedModel] : DEFAULT_MODELS);
+  const attemptModels =
+    Array.isArray(requestedModels) && requestedModels.length
+      ? requestedModels
+      : requestedModel
+        ? [requestedModel]
+        : DEFAULT_MODELS;
 
   let lastError = null;
   for (const m of attemptModels) {
@@ -93,8 +93,8 @@ app.post('/ai-insight', async (req, res) => {
       const response = await callGroqModel(m, {
         messages: [
           { role: 'system', content: prompt },
-          { role: 'user', content: `Transactions:\n${payloadStr}` }
-        ]
+          { role: 'user', content: `Transactions:\n${payloadStr}` },
+        ],
       });
 
       const aiText = response.data.choices?.[0]?.message?.content || 'No insights generated.';
@@ -134,9 +134,11 @@ app.post('/ai-insight', async (req, res) => {
   }
 
   // If we reach here, all candidate models failed
-  const finalMsg = lastError?.response?.data?.error?.message || lastError?.message || 'Failed to get insights from Groq API';
+  const finalMsg =
+    lastError?.response?.data?.error?.message ||
+    lastError?.message ||
+    'Failed to get insights from Groq API';
   return res.status(502).json({ error: finalMsg });
-
 });
 
 const PORT = process.env.PORT || 5001;
