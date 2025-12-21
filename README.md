@@ -11,6 +11,7 @@ A modern web application for tracking income, expenses, and budgets.
 Finance Tracker is a responsive web application that helps users manage income, expenses, and monthly budgets through an intuitive dashboard. It exists to make personal finance management simpler and more visual, helping users build healthier spending habits.
 
 ## Features
+
 - User registration & secure authentication (Supabase)
 - Add, edit, and delete transactions (income & expenses)
 - Category-based budgets and progress tracking with visual indicators
@@ -28,6 +29,7 @@ Finance Tracker is a responsive web application that helps users manage income, 
 - Lazy loading and skeleton states
 
 ## Tech Stack
+
 - Frontend: React, React Router DOM, Vite, Tailwind CSS, Framer Motion
 - Backend: Supabase (Postgres + Realtime)
 - Charts: Chart.js, React Chartjs 2, Recharts
@@ -38,21 +40,25 @@ Finance Tracker is a responsive web application that helps users manage income, 
 - Tools: ESLint, Prettier, Vitest, TypeScript, Husky, lint-staged
 
 ## Screenshots
+
 ![Dashboard](public/dashboard.jpg)
 
 ## Installation
 
 1. Clone the repository
+
    ```bash
    git clone https://github.com/GayangaBandara/finance-tracker.git
    ```
 
 2. Navigate to the project folder
+
    ```bash
    cd finance-tracker
    ```
 
 3. Install dependencies
+
    ```bash
    npm install
    ```
@@ -65,12 +71,14 @@ Finance Tracker is a responsive web application that helps users manage income, 
 ## Environment Variables
 
 Create a `.env.local` file and add:
+
 ```env
 VITE_SUPABASE_URL=https://<your-project>.supabase.co
 VITE_SUPABASE_ANON_KEY=sb_publishable_...
 ```
 
 ## Folder Structure
+
 ```
 src/
 ├─ components/
@@ -81,23 +89,28 @@ src/
 ```
 
 ## Usage
+
 - Register or log in
 - Add income and expenses
 - View monthly analytics and charts
 - Create budgets and monitor progress
 
 ## Future Improvements
+
 - AI-based spending insights
 - Export reports as PDF/CSV
 - Multi-currency support and scheduled recurring transactions
 
 ## Contributing
+
 Contributions are welcome. Please fork the repository and submit a pull request.
 
 ## License
+
 This project is licensed under the MIT License.
 
 ## Author
+
 Gayanga Bandara  
 Software Engineering Undergraduate  
 GitHub: https://github.com/GayangaBandara

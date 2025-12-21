@@ -14,14 +14,36 @@ const GROQ_API_KEY = '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';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 // Supported/fallback models (preference order) — can be overridden by the request body:
-const DEFAULT_MODELS = ['llama-3.1-8b-instant', 'llama-3.1-70b-versatile', 'mixtral-8x7b-32k', 'gemma-2-9b-it'];
+const DEFAULT_MODELS = [
+  'llama-3.1-8b-instant',
+  'llama-3.1-70b-versatile',
+  'mixtral-8x7b-32k',
+  'gemma-2-9b-it',
+];
 
 // Known aliases for common user-provided names — maps aliases to canonical model ids
 const MODEL_ALIASES = {
-  'llama-3.1-8b-instant': ['llama-3.1-8b-instant', 'llama3-8b-8192', 'llama-3-8b-8192', 'llama3-8b', 'llama-3-8b'],
-  'llama-3.1-70b-versatile': ['llama-3.1-70b-versatile', 'llama3-70b-8192', 'llama-3-70b-8192', 'llama3-70b', 'llama-3-70b'],
-  'mixtral-8x7b-32k': ['mixtral-8x7b-32k', 'mixtral-8x7b-32768', 'mixtral-8x7b-8192', 'mixtral-8x7b'],
-  'gemma-2-9b-it': ['gemma-2-9b-it', 'gemma-7b', 'gemma7b', 'gemma']
+  'llama-3.1-8b-instant': [
+    'llama-3.1-8b-instant',
+    'llama3-8b-8192',
+    'llama-3-8b-8192',
+    'llama3-8b',
+    'llama-3-8b',
+  ],
+  'llama-3.1-70b-versatile': [
+    'llama-3.1-70b-versatile',
+    'llama3-70b-8192',
+    'llama-3-70b-8192',
+    'llama3-70b',
+    'llama-3-70b',
+  ],
+  'mixtral-8x7b-32k': [
+    'mixtral-8x7b-32k',
+    'mixtral-8x7b-32768',
+    'mixtral-8x7b-8192',
+    'mixtral-8x7b',
+  ],
+  'gemma-2-9b-it': ['gemma-2-9b-it', 'gemma-7b', 'gemma7b', 'gemma'],
 };
 
 function canonicalModelName(name) {
@@ -52,17 +74,13 @@ async function callGroqModel(model, { messages, temperature, max_tokens, top_p }
   if (typeof max_tokens === 'number') body.max_tokens = max_tokens;
   if (typeof top_p === 'number') body.top_p = top_p;
 
-  return axios.post(
-    GROQ_API_URL,
-    body,
-    {
-      timeout: 15000,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${GROQ_API_KEY}`,
-      },
-    }
-  );
+  return axios.post(GROQ_API_URL, body, {
+    timeout: 15000,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${GROQ_API_KEY}`,
+    },
+  });
 }
 
 app.get('/', (req, res) => {
@@ -87,10 +105,12 @@ const insightsCache = new Map();
 app.post('/ai-insight', async (req, res) => {
   const { transactions } = req.body;
   console.log(
-    `[AI Insight] request received - transactions: ${Array.isArray(transactions) ? transactions.length : 'invalid'}`,
+    `[AI Insight] request received - transactions: ${Array.isArray(transactions) ? transactions.length : 'invalid'}`
   );
   // Log a small preview to help debug malformed requests without leaking everything
-  console.log('Request body snippet:', { transactionsPreview: Array.isArray(transactions) ? transactions.slice(0, 3) : transactions });
+  console.log('Request body snippet:', {
+    transactionsPreview: Array.isArray(transactions) ? transactions.slice(0, 3) : transactions,
+  });
 
   if (!transactions || !Array.isArray(transactions)) {
     return res.status(400).json({
@@ -161,7 +181,14 @@ Respond in this JSON format (all fields required):
 }`;
 
   // Allow client to suggest model(s) via `model` or `models` in the request body and tuning params
-  const { model: requestedModel, models: requestedModels, systemPrompt, temperature, max_tokens, top_p } = req.body;
+  const {
+    model: requestedModel,
+    models: requestedModels,
+    systemPrompt,
+    temperature,
+    max_tokens,
+    top_p,
+  } = req.body;
 
   let attemptModels;
   if (Array.isArray(requestedModels) && requestedModels.length) {
