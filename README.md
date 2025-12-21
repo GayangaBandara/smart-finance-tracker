@@ -1,131 +1,103 @@
-# 💰 FinanceTracker Pro
+# Finance Tracker
 
-[![React](https://img.shields.io/badge/React-19.1.1-blue.svg)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-7.1.14-646CFF.svg)](https://vitejs.dev/)
-[![Supabase](https://img.shields.io/badge/Supabase-1.0.0-blue.svg)](https://supabase.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.18-38B2AC.svg)](https://tailwindcss.com/)
+A modern web application for tracking income, expenses, and budgets.
 
-> A modern, responsive finance tracking application built with React 19, Supabase, and Tailwind CSS. Manage transactions, set budgets, visualize spending patterns, and achieve financial wellness.
+![License](https://img.shields.io/badge/license-MIT-green)
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Tech](https://img.shields.io/badge/stack-React%20%7C%20Supabase-blue)
 
-## ✨ Features
+## Project Description
 
-- **Real-time Dashboard** - Live financial insights with income, expenses, and net balance
-- **Transaction Management** - Add, edit, and delete income/expense transactions
-- **Smart Budgeting** - Category-based budgets with visual progress tracking
-- **Interactive Charts** - Beautiful charts powered by Chart.js and Recharts
-- **Secure Authentication** - Supabase-powered user authentication
-- **Responsive Design** - Works perfectly on all devices
-- **Real-time Updates** - Live data synchronization with Supabase
+Finance Tracker is a responsive web application that helps users manage income, expenses, and monthly budgets through an intuitive dashboard. It exists to make personal finance management simpler and more visual, helping users build healthier spending habits.
 
-## 🛠️ Tech Stack
+## Features
+- User registration & secure authentication (Supabase)
+- Add, edit, and delete transactions (income & expenses)
+- Category-based budgets and progress tracking with visual indicators
+- Interactive charts and reports (line, bar, pie charts)
+- AI-powered spending insights using LLM (Groq)
+- Currency conversion and multi-currency display
+- Export reports as PDF, Word, and JSON
+- Date range filtering for reports (week, month, quarter, year)
+- Budget analysis with progress bars and utilization percentages
+- Financial summary statistics (income, expenses, net income)
+- Category breakdown and monthly trend analysis
+- Responsive UI with light/dark theme support
+- Protected routes and error handling
+- Form validation and notifications
+- Lazy loading and skeleton states
 
-### Frontend
+## Tech Stack
+- Frontend: React, React Router DOM, Vite, Tailwind CSS, Framer Motion
+- Backend: Supabase (Postgres + Realtime)
+- Charts: Chart.js, React Chartjs 2, Recharts
+- Forms & Validation: React Hook Form, Yup
+- Utilities: Axios, Date-fns, Lucide React
+- Export: jsPDF, html2canvas, xlsx, docx
+- AI: Groq (LLM) for AI Insights
+- Tools: ESLint, Prettier, Vitest, TypeScript, Husky, lint-staged
 
-- **React 19** - Modern React with concurrent features
-- **Vite** - Next-generation frontend tooling
-- **Tailwind CSS** - Utility-first CSS framework
-- **React Router** - Declarative routing for React
-- **React Hook Form** - Performant forms with easy validation
-- **Yup** - Schema validation for forms
+## Screenshots
+![Dashboard](public/dashboard.jpg)
 
-### Backend & Database
+## Installation
 
-- **Supabase** - Postgres + Realtime + Auth (recommended tables: `transactions`, `budgets`, `expenses`)
-- **Axios** - HTTP client for API requests
+1. Clone the repository
+   ```bash
+   git clone https://github.com/GayangaBandara/finance-tracker.git
+   ```
 
-### Charts & Visualization
+2. Navigate to the project folder
+   ```bash
+   cd finance-tracker
+   ```
 
-- **Chart.js** - Simple yet flexible JavaScript charting
-- **React Chart.js 2** - React wrapper for Chart.js
-- **Recharts** - Composed charting library built on React components
+3. Install dependencies
+   ```bash
+   npm install
+   ```
 
-### Development Tools
+4. Run the app
+   ```bash
+   npm run dev
+   ```
 
-- **ESLint** - Pluggable linting utility
-- **PostCSS** - Tool for transforming CSS
-- **Autoprefixer** - PostCSS plugin for vendor prefixes
-- **TypeScript** - Typed JavaScript for better development experience
+## Environment Variables
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js (v16+)
-- Supabase account
-- Create `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
-
-### Installation
-
-```bash
-git clone <repository-url>
-cd finance-tracker
-npm install
-```
-
-### Setup Supabase
-
-1. Create a Supabase project at https://app.supabase.com/
-2. Create the tables `transactions`, `budgets`, `expenses` (fields: `id`, `uid`, `amount`, `date`/`created_at`, `updated_at`, etc). Use SQL or Table Editor.
-3. In your project root create a `.env.local` file and add (example provided in `.env.example`):
-
-```
+Create a `.env.local` file and add:
+```env
 VITE_SUPABASE_URL=https://<your-project>.supabase.co
 VITE_SUPABASE_ANON_KEY=sb_publishable_...
 ```
 
-> **Important:** Do **not** commit `.env.local`. Add your Supabase **service_role** key only to a server-side environment (e.g., your backend or server functions) — never expose it to client-side code.
-
-4. Use `src/lib/supabaseClient.js` to initialize Supabase client (already included in project). The client reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from environment variables.
-
-5. Create tables and policies: run the SQL in `supabase/schema.sql` in your Supabase project's SQL editor to create the `transactions`, `budgets`, and `expenses` tables and RLS policies.
-
-6. Start the dev server and test flows locally (registration, login, add/edit/delete transactions and budgets).
-
-### Run Development Server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173)
-
-## 📖 Usage
-
-1. **Register/Login** with email and password
-2. **Add Transactions** - Record income and expenses
-3. **Set Budgets** - Create category-based spending limits
-4. **View Dashboard** - Monitor financial health in real-time
-5. **Generate Reports** - Analyze spending patterns and trends
-
-## 📁 Project Structure
-
+## Folder Structure
 ```
 src/
-├── components/          # Reusable UI components
-│   ├── budget/         # Budget-related components
-│   ├── common/         # Shared components (Button, Input, Modal)
-│   ├── layout/         # Layout components (Header, Sidebar)
-│   └── transactions/   # Transaction components
-├── context/            # React Context providers
-├── hooks/              # Custom React hooks
-├── pages/              # Page components
-├── services/           # API and external services
-└── utils/              # Utility functions
+├─ components/
+├─ pages/
+├─ services/
+├─ context/
+└─ App.jsx
 ```
 
-## 🔧 Scripts
+## Usage
+- Register or log in
+- Add income and expenses
+- View monthly analytics and charts
+- Create budgets and monitor progress
 
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run preview  # Preview production build
-npm run lint     # Run ESLint
-```
+## Future Improvements
+- AI-based spending insights
+- Export reports as PDF/CSV
+- Multi-currency support and scheduled recurring transactions
 
-## 📄 License
+## Contributing
+Contributions are welcome. Please fork the repository and submit a pull request.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## License
+This project is licensed under the MIT License.
 
----
-
-**Built with ❤️ for better financial management**
+## Author
+Gayanga Bandara  
+Software Engineering Undergraduate  
+GitHub: https://github.com/GayangaBandara

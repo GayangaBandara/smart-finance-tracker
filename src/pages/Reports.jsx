@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { Download, Calendar, TrendingUp, TrendingDown, FileText, File } from 'lucide-react';
 import Button from '../components/common/Button';
+import CurrencyDisplay from '../components/common/CurrencyDisplay';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -138,11 +139,13 @@ const Reports = () => {
 
   // Chart data
   const pieChartData = {
-    labels: categoryBreakdown.map((item) => item.category),
+    labels: categoryBreakdown.filter((item) => item.expense > 0).map((item) => item.category),
     datasets: [
       {
         label: 'Expenses',
-        data: categoryBreakdown.map((item) => Math.max(item.expense, 0)),
+        data: categoryBreakdown
+          .filter((item) => item.expense > 0)
+          .map((item) => Math.max(item.expense, 0)),
         backgroundColor: [
           '#FF6384',
           '#36A2EB',
@@ -473,7 +476,9 @@ const Reports = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Income</p>
-              <p className="text-2xl font-bold text-green-600">${summary.income.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-green-600">
+                <CurrencyDisplay amount={summary.income} />
+              </p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
@@ -483,7 +488,9 @@ const Reports = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Expenses</p>
-              <p className="text-2xl font-bold text-red-600">${summary.expenses.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-red-600">
+                <CurrencyDisplay amount={summary.expenses} />
+              </p>
             </div>
             <TrendingDown className="w-8 h-8 text-red-500" />
           </div>
@@ -496,7 +503,7 @@ const Reports = () => {
               <p
                 className={`text-2xl font-bold ${summary.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}
               >
-                ${summary.netIncome.toFixed(2)}
+                <CurrencyDisplay amount={Math.abs(summary.netIncome)} />
               </p>
             </div>
             {summary.netIncome >= 0 ? (
@@ -547,29 +554,44 @@ const Reports = () => {
               Expenses by Category
             </h3>
             <div className="h-64 sm:h-80">
-              <Pie
-                data={pieChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      position: 'bottom',
-                      labels: {
-                        boxWidth: 12,
-                        padding: 15,
+              {categoryBreakdown.some((item) => item.expense > 0) ? (
+                <Pie
+                  data={pieChartData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        position: 'bottom',
+                        labels: {
+                          boxWidth: 12,
+                          padding: 15,
+                          font: {
+                            size: 12,
+                          },
+                        },
                       },
-                    },
-                    tooltip: {
-                      callbacks: {
-                        label: function (context) {
-                          return '$' + context.parsed.toFixed(2);
+                      tooltip: {
+                        enabled: true,
+                        callbacks: {
+                          label: function (context) {
+                            const value = context.parsed || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `$${value.toFixed(2)} (${percentage}%)`;
+                          },
                         },
                       },
                     },
-                  },
-                }}
-              />
+                  }}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-gray-500 text-center">
+                    No expense data available for the selected period
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -633,18 +655,22 @@ const Reports = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Budget Amount:</span>
-                    <span className="font-medium">${Number(budget.amount).toFixed(2)}</span>
+                    <span className="font-medium">
+                      <CurrencyDisplay amount={Number(budget.amount)} />
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Spent Amount:</span>
-                    <span className="font-medium">${spentAmount.toFixed(2)}</span>
+                    <span className="font-medium">
+                      <CurrencyDisplay amount={spentAmount} />
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Remaining:</span>
                     <span
                       className={`font-medium ${remainingAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}
                     >
-                      ${Math.abs(remainingAmount).toFixed(2)}
+                      <CurrencyDisplay amount={Math.abs(remainingAmount)} />
                       {remainingAmount < 0 ? ' (Over Budget)' : ''}
                     </span>
                   </div>
@@ -697,15 +723,15 @@ const Reports = () => {
                     {item.category}
                   </td>
                   <td className="py-3 px-2 sm:px-4 text-right text-green-600 text-sm sm:text-base">
-                    ${item.income.toFixed(2)}
+                    <CurrencyDisplay amount={item.income} />
                   </td>
                   <td className="py-3 px-2 sm:px-4 text-right text-red-600 text-sm sm:text-base">
-                    ${item.expense.toFixed(2)}
+                    <CurrencyDisplay amount={item.expense} />
                   </td>
                   <td
                     className={`py-3 px-2 sm:px-4 text-right font-semibold text-sm sm:text-base ${item.net >= 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
-                    ${item.net.toFixed(2)}
+                    <CurrencyDisplay amount={Math.abs(item.net)} />
                   </td>
                 </tr>
               ))}

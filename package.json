@@ -68,7 +68,7 @@
   "main": "eslint.config.js",
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,md}": [
       "prettier --write",
