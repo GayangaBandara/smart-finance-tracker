@@ -66,7 +66,9 @@ const TransactionForm = ({ onSuccess }) => {
   };
 
   return (
-    <div>
+    <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Transaction</h2>
+
       {error && (
         <div className="status-badge status-danger mb-6">
           <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -80,13 +82,13 @@ const TransactionForm = ({ onSuccess }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Transaction Type */}
-        <div className="form-group">
-          <label className="form-label">Transaction Type</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Transaction Type</label>
           <div className="grid grid-cols-2 gap-3">
             <label
-              className={`relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+              className={`relative flex items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
                 watch('type') === 'expense'
                   ? 'border-red-500 bg-red-50 text-red-700'
                   : 'border-gray-200 bg-white hover:border-gray-300'
@@ -105,11 +107,11 @@ const TransactionForm = ({ onSuccess }) => {
                     watch('type') === 'expense' ? 'border-red-500 bg-red-500' : 'border-gray-300'
                   }`}
                 ></div>
-                <span className="font-medium">Expense</span>
+                <span className="font-medium text-sm">Expense</span>
               </div>
             </label>
             <label
-              className={`relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+              className={`relative flex items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
                 watch('type') === 'income'
                   ? 'border-green-500 bg-green-50 text-green-700'
                   : 'border-gray-200 bg-white hover:border-gray-300'
@@ -128,37 +130,37 @@ const TransactionForm = ({ onSuccess }) => {
                     watch('type') === 'income' ? 'border-green-500 bg-green-500' : 'border-gray-300'
                   }`}
                 ></div>
-                <span className="font-medium">Income</span>
+                <span className="font-medium text-sm">Income</span>
               </div>
             </label>
           </div>
         </div>
 
         {/* Amount */}
-        <div className="form-group">
-          <label className="form-label">Amount</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-lg font-medium">$</span>
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span className="text-gray-500 font-medium">$</span>
             </div>
             <input
               type="number"
               step="0.01"
               {...register('amount')}
-              className="input-glass pl-8"
+              className="block w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 placeholder-gray-400"
               placeholder="0.00"
             />
           </div>
-          {errors.amount && <p className="form-error">{errors.amount.message}</p>}
+          {errors.amount && <p className="mt-1 text-sm text-red-600">{errors.amount.message}</p>}
         </div>
 
         {/* Category */}
-        <div className="form-group">
-          <label className="form-label">Category</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
           <div className="relative">
             <select
               {...register('category')}
-              className="input-glass appearance-none cursor-pointer w-full"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-lg appearance-none cursor-pointer focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"
             >
               <option value="">Select a category</option>
               {(categories[watch('type') || 'expense'] || []).map((cat) => (
@@ -167,9 +169,9 @@ const TransactionForm = ({ onSuccess }) => {
                 </option>
               ))}
             </select>
-            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <svg
-                className="w-5 h-5 text-gray-400"
+                className="w-4 h-4 text-gray-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -183,41 +185,30 @@ const TransactionForm = ({ onSuccess }) => {
               </svg>
             </div>
           </div>
-          {errors.category && <p className="form-error">{errors.category.message}</p>}
+          {errors.category && (
+            <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+          )}
         </div>
 
         {/* Date */}
-        <div className="form-group">
-          <label className="form-label">Date</label>
-          <div className="relative">
-            <input type="date" {...register('date')} className="input-glass w-full" />
-            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-          </div>
-          {errors.date && <p className="form-error">{errors.date.message}</p>}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+          <input
+            type="date"
+            {...register('date')}
+            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"
+          />
+          {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>}
         </div>
 
         {/* Note */}
-        <div className="form-group">
-          <label className="form-label">Note (Optional)</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Note (Optional)</label>
           <textarea
             {...register('note')}
             rows="3"
             placeholder="Add a note about this transaction..."
-            className="input-glass resize-none w-full"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 placeholder-gray-400"
           />
         </div>
 

@@ -24,8 +24,8 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
   // Desktop / large: static sidebar
   const staticSidebar = (
-    <aside className="hidden md:block sidebar-bg border-r border-white/20 w-64 h-screen fixed top-16 left-0 z-10">
-      <div className="p-6 pb-20">
+    <aside className="hidden md:block sidebar-bg border-r border-white/20 w-64 fixed left-0 top-0 h-screen z-10 overflow-y-auto">
+      <div className="p-6 pb-20 mt-16">
         <div className="mb-6">
           <h2 className="text-sm font-bold text-gray-600 uppercase tracking-wider">Navigation</h2>
         </div>

@@ -455,43 +455,16 @@ const Reports = () => {
           <p className="text-gray-600">Analyze your financial data and trends</p>
         </div>
 
-        <div className="space-y-4 lg:space-y-0">
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="week">Last Week</option>
-            <option value="month">Last Month</option>
-            <option value="quarter">Last Quarter</option>
-            <option value="year">Last Year</option>
-          </select>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <Button
-              onClick={() => exportReport('pdf')}
-              className="flex items-center justify-center space-x-2"
-            >
-              <FileText size={16} />
-              <span>PDF</span>
-            </Button>
-            <Button
-              onClick={() => exportReport('word')}
-              className="flex items-center justify-center space-x-2"
-            >
-              <File size={16} />
-              <span>Word</span>
-            </Button>
-            <Button
-              onClick={() => exportReport('json')}
-              variant="outline"
-              className="flex items-center justify-center space-x-2"
-            >
-              <Download size={16} />
-              <span>JSON</span>
-            </Button>
-          </div>
-        </div>
+        <select
+          value={dateRange}
+          onChange={(e) => setDateRange(e.target.value)}
+          className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        >
+          <option value="week">Last Week</option>
+          <option value="month">Last Month</option>
+          <option value="quarter">Last Quarter</option>
+          <option value="year">Last Year</option>
+        </select>
       </div>
 
       {/* Summary Cards */}
@@ -700,8 +673,8 @@ const Reports = () => {
         </div>
       </div>
 
-      {/* Category Breakdown Table */}
-      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-200">
+      {/* Category Breakdown Table with Export Buttons */}
+      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-200 mb-8">
         <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Category Breakdown</h3>
         <div className="overflow-x-auto">
           <table className="w-full min-w-full">
@@ -738,6 +711,35 @@ const Reports = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Export Buttons */}
+      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-200">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Export Report</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Button
+            onClick={() => exportReport('pdf')}
+            className="flex items-center justify-center space-x-2 py-3"
+          >
+            <FileText size={18} />
+            <span>Export as PDF</span>
+          </Button>
+          <Button
+            onClick={() => exportReport('word')}
+            className="flex items-center justify-center space-x-2 py-3"
+          >
+            <File size={18} />
+            <span>Export as Word</span>
+          </Button>
+          <Button
+            onClick={() => exportReport('json')}
+            variant="outline"
+            className="flex items-center justify-center space-x-2 py-3"
+          >
+            <Download size={18} />
+            <span>Export as JSON</span>
+          </Button>
         </div>
       </div>
     </div>

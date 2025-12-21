@@ -29,7 +29,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <div className="flex flex-col min-h-screen w-full bg-gray-50">
       <div className="flex-1 bg-gradient-to-br from-green-50 to-white w-full">
         {/* Hero Section */}
         <div className="relative overflow-hidden">

@@ -6,6 +6,8 @@ import TransactionForm from '../components/transactions/TransactionForm';
 import TransactionList from '../components/transactions/TransactionList';
 import GlassCard from '../components/common/GlassCard.jsx';
 import SkeletonCard from '../components/common/SkeletonCard.jsx';
+import CurrencyDisplay from '../components/common/CurrencyDisplay.jsx';
+import AIInsightsDisplay from '../components/AIInsightsDisplay';
 import useAIInsights from '../hooks/useAIInsights';
 
 const Dashboard = () => {
@@ -178,14 +180,14 @@ const Dashboard = () => {
                       >
                         Total Income
                       </motion.p>
-                      <motion.p
+                      <motion.div
                         className="text-3xl md:text-4xl font-bold text-green-600"
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: shouldReduceMotion ? 0 : 0.4, duration: 0.25 }}
                       >
-                        ${totalIncome.toFixed(2)}
-                      </motion.p>
+                        <CurrencyDisplay amount={totalIncome} />
+                      </motion.div>
                     </div>
                     <motion.div
                       className="p-3 bg-green-500/20 rounded-xl"
@@ -228,14 +230,14 @@ const Dashboard = () => {
                       >
                         Total Expenses
                       </motion.p>
-                      <motion.p
+                      <motion.div
                         className="text-3xl md:text-4xl font-bold text-red-600"
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: shouldReduceMotion ? 0 : 0.4, duration: 0.25 }}
                       >
-                        ${totalExpenses.toFixed(2)}
-                      </motion.p>
+                        <CurrencyDisplay amount={totalExpenses} />
+                      </motion.div>
                     </div>
                     <motion.div
                       className="p-3 bg-red-500/20 rounded-xl"
@@ -280,7 +282,7 @@ const Dashboard = () => {
                       >
                         {netBalance >= 0 ? 'Positive Balance' : 'Negative Balance'}
                       </motion.p>
-                      <motion.p
+                      <motion.div
                         className={`text-3xl md:text-4xl font-bold ${
                           netBalance >= 0 ? 'text-blue-600' : 'text-orange-600'
                         }`}
@@ -288,8 +290,8 @@ const Dashboard = () => {
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: shouldReduceMotion ? 0 : 0.4, duration: 0.25 }}
                       >
-                        ${Math.abs(netBalance).toFixed(2)}
-                      </motion.p>
+                        <CurrencyDisplay amount={Math.abs(netBalance)} />
+                      </motion.div>
                     </div>
                     <motion.div
                       className={`p-3 rounded-xl ${
@@ -329,7 +331,7 @@ const Dashboard = () => {
         {/* AI-Powered Financial Insights */}
         <motion.div className="mt-6" variants={itemVariants}>
           <GlassCard title="AI Financial Insights" variant="elevated">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
               <div className="text-sm text-gray-400">
                 {lastUpdated ? `Last updated ${new Date(lastUpdated).toLocaleString()}` : ''}
               </div>
@@ -344,15 +346,12 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {loadingInsights ? (
-              <div className="text-gray-500">Loading insights...</div>
-            ) : insightsError ? (
-              <div className="text-red-500">{insightsError}</div>
-            ) : aiInsights ? (
-              <div className="whitespace-pre-line text-gray-800">{aiInsights}</div>
-            ) : (
-              <div className="text-gray-500">No insights available yet.</div>
-            )}
+            <AIInsightsDisplay
+              insights={aiInsights}
+              loading={loadingInsights}
+              error={insightsError}
+              onRefresh={refreshInsights}
+            />
           </GlassCard>
         </motion.div>
 
@@ -392,7 +391,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <span className="text-xl font-bold text-gray-800">
-                      ${thisMonthExpenses.toFixed(2)}
+                      <CurrencyDisplay amount={thisMonthExpenses} />
                     </span>
                   </motion.div>
 
@@ -443,7 +442,7 @@ const Dashboard = () => {
                               <span className="text-sm font-medium text-gray-700">{cat}</span>
                             </div>
                             <span className="text-sm font-bold text-gray-800">
-                              ${amt.toFixed(2)}
+                              <CurrencyDisplay amount={amt} />
                             </span>
                           </motion.div>
                         ))}
@@ -508,13 +507,15 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">{budget.period}</span>
                     <span className="text-sm text-gray-600">
-                      Budget ${Number(budget.amount).toFixed(2)}
+                      Budget <CurrencyDisplay amount={Number(budget.amount)} />
                     </span>
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Spent: ${budget.spentAmount.toFixed(2)}</span>
+                      <span>
+                        Spent: <CurrencyDisplay amount={budget.spentAmount} />
+                      </span>
                       <span>{Math.round(budget.percentage)}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -544,8 +545,8 @@ const Dashboard = () => {
                         duration: 0.2,
                       }}
                     >
-                      {budget.remainingAmount < 0 ? 'Over budget by' : 'Remaining'}: $
-                      {Math.abs(budget.remainingAmount).toFixed(2)}
+                      {budget.remainingAmount < 0 ? 'Over budget by' : 'Remaining'}:{' '}
+                      <CurrencyDisplay amount={Math.abs(budget.remainingAmount)} />
                     </motion.p>
                   </div>
                 </GlassCard>
@@ -594,7 +595,7 @@ const Dashboard = () => {
                 Record your income and expenses
               </motion.p>
             </div>
-            <GlassCard variant="elevated" className="h-fit">
+            <GlassCard variant="elevated" className="h-fit bg-gray-50/50">
               <TransactionForm />
             </GlassCard>
           </motion.div>
@@ -625,7 +626,7 @@ const Dashboard = () => {
                 View and manage your transactions
               </motion.p>
             </div>
-            <GlassCard variant="elevated" className="h-fit">
+            <GlassCard variant="elevated" className="h-fit bg-gray-50/50">
               <TransactionList />
             </GlassCard>
           </motion.div>

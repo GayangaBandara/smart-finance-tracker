@@ -31,7 +31,7 @@ const AppLayout = ({ children }) => {
       <Header onToggleSidebar={toggleSidebar} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-        <main className="flex-1 overflow-y-auto md:ml-64 w-full">
+        <main className="flex-1 overflow-y-auto w-full pt-0 md:ml-64">
           <div className="p-4 sm:p-6 lg:p-8">{children}</div>
         </main>
       </div>

@@ -8,6 +8,7 @@ import { useFinance } from '../../context/FinanceContext';
 import Button from '../common/Button';
 import Modal from '../common/Modal';
 import Input from '../common/Input';
+import CurrencyDisplay from '../common/CurrencyDisplay';
 
 const TransactionList = () => {
   const { transactions, deleteTransaction, updateTransaction } = useFinance();
@@ -91,13 +92,16 @@ const TransactionList = () => {
     const color = type === 'income' ? 'text-green-600' : 'text-red-600';
     return (
       <span className={`font-semibold ${color}`}>
-        {sign}${Math.abs(amount).toFixed(2)}
+        {sign}
+        <CurrencyDisplay amount={Math.abs(amount)} />
       </span>
     );
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 xl:px-0">
+    <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Transaction History</h2>
+
       {/* Filters Section */}
       <div className="mb-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
@@ -215,12 +219,12 @@ const TransactionList = () => {
                 </div>
               )}
 
-              <div className="flex flex-col xs:flex-row xs:justify-end gap-2 xs:gap-3 ml-5 sm:ml-6">
+              <div className="flex flex-row justify-end gap-3 ml-5 sm:ml-6">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleEdit(transaction)}
-                  className="w-full xs:w-auto flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs sm:text-sm rounded-md group-hover:bg-indigo-50 group-hover:border-indigo-300 transition-colors duration-200"
+                  className="w-auto flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs sm:text-sm rounded-md group-hover:bg-indigo-50 group-hover:border-indigo-300 transition-colors duration-200"
                   aria-label="Edit transaction"
                 >
                   <Edit2 size={14} className="w-3.5 h-3.5" />
@@ -230,7 +234,7 @@ const TransactionList = () => {
                   variant="danger"
                   size="sm"
                   onClick={() => handleDelete(transaction.id)}
-                  className="w-full xs:w-auto flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs sm:text-sm rounded-md group-hover:bg-red-50 group-hover:border-red-300 transition-colors duration-200"
+                  className="w-auto flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs sm:text-sm rounded-md group-hover:bg-red-50 group-hover:border-red-300 transition-colors duration-200"
                   aria-label="Delete transaction"
                 >
                   <Trash2 size={14} className="w-3.5 h-3.5" />

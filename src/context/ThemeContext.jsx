@@ -30,6 +30,11 @@ export const ThemeProvider = ({ children }) => {
     return saved === 'true';
   });
 
+  const [currency, setCurrency] = useState(() => {
+    const saved = localStorage.getItem('finance-tracker-currency');
+    return saved || 'USD';
+  });
+
   useEffect(() => {
     // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -82,6 +87,11 @@ export const ThemeProvider = ({ children }) => {
     }
   }, [highContrast]);
 
+  useEffect(() => {
+    // Save currency to localStorage
+    localStorage.setItem('finance-tracker-currency', currency);
+  }, [currency]);
+
   const updateTheme = (newTheme) => {
     setTheme(newTheme);
     // Also update appearance settings if needed
@@ -91,12 +101,18 @@ export const ThemeProvider = ({ children }) => {
     setHighContrast(enabled);
   };
 
+  const updateCurrency = (newCurrency) => {
+    setCurrency(newCurrency);
+  };
+
   const value = {
     theme,
     systemTheme,
     highContrast,
+    currency,
     updateTheme,
     updateHighContrast,
+    updateCurrency,
   };
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

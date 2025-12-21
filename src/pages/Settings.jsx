@@ -49,7 +49,15 @@ const passwordSchema = yup.object({
 const Settings = () => {
   const { user, logout } = useAuth();
   const { transactions, budgets } = useFinance();
-  const { theme, systemTheme, highContrast, updateTheme, updateHighContrast } = useTheme();
+  const {
+    theme,
+    systemTheme,
+    highContrast,
+    currency,
+    updateTheme,
+    updateHighContrast,
+    updateCurrency,
+  } = useTheme();
   const [activeSection, setActiveSection] = useState('profile');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -96,7 +104,7 @@ const Settings = () => {
   const [appearanceSettings, setAppearanceSettings] = useState({
     theme: theme,
     compactMode: false,
-    currency: 'USD',
+    currency: currency,
     dateFormat: 'MM/DD/YYYY',
     timeFormat: '12h',
     language: 'en',
@@ -444,9 +452,12 @@ const Settings = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
             <select
               value={appearanceSettings.currency}
-              onChange={(e) =>
-                setAppearanceSettings((prev) => ({ ...prev, currency: e.target.value }))
-              }
+              onChange={(e) => {
+                const newCurrency = e.target.value;
+                setAppearanceSettings((prev) => ({ ...prev, currency: newCurrency }));
+                updateCurrency(newCurrency);
+                showNotification('success', `Currency changed to ${newCurrency}`);
+              }}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
             >
               <option value="USD">USD ($)</option>
@@ -457,6 +468,73 @@ const Settings = () => {
               <option value="AUD">AUD ($)</option>
               <option value="CHF">CHF (Fr)</option>
               <option value="CNY">CNY (¥)</option>
+              <option value="INR">INR (₹)</option>
+              <option value="KRW">KRW (₩)</option>
+              <option value="LKR">LKR (Rs)</option>
+              <option value="BRL">BRL (R$)</option>
+              <option value="MXN">MXN ($)</option>
+              <option value="RUB">RUB (₽)</option>
+              <option value="ZAR">ZAR (R)</option>
+              <option value="SGD">SGD ($)</option>
+              <option value="HKD">HKD ($)</option>
+              <option value="NZD">NZD ($)</option>
+              <option value="SEK">SEK (kr)</option>
+              <option value="NOK">NOK (kr)</option>
+              <option value="DKK">DKK (kr)</option>
+              <option value="PLN">PLN (zł)</option>
+              <option value="TRY">TRY (₺)</option>
+              <option value="THB">THB (฿)</option>
+              <option value="MYR">MYR (RM)</option>
+              <option value="IDR">IDR (Rp)</option>
+              <option value="PHP">PHP (₱)</option>
+              <option value="VND">VND (₫)</option>
+              <option value="CZK">CZK (Kč)</option>
+              <option value="HUF">HUF (Ft)</option>
+              <option value="ILS">ILS (₪)</option>
+              <option value="EGP">EGP (£)</option>
+              <option value="ARS">ARS ($)</option>
+              <option value="CLP">CLP ($)</option>
+              <option value="COP">COP ($)</option>
+              <option value="PEN">PEN (S/)</option>
+              <option value="UYU">UYU ($)</option>
+              <option value="PYG">PYG (₲)</option>
+              <option value="BOB">BOB (Bs)</option>
+              <option value="VES">VES (Bs)</option>
+              <option value="CRC">CRC (₡)</option>
+              <option value="GTQ">GTQ (Q)</option>
+              <option value="HNL">HNL (L)</option>
+              <option value="NIO">NIO (C$)</option>
+              <option value="SVC">SVC ($)</option>
+              <option value="PAB">PAB (B/.)</option>
+              <option value="DOP">DOP (RD$)</option>
+              <option value="JMD">JMD (J$)</option>
+              <option value="TTD">TTD (TT$)</option>
+              <option value="BBD">BBD (Bds$)</option>
+              <option value="BSD">BSD ($)</option>
+              <option value="KYD">KYD ($)</option>
+              <option value="XCD">XCD ($)</option>
+              <option value="ANG">ANG (ƒ)</option>
+              <option value="AWG">AWG (ƒ)</option>
+              <option value="BMD">BMD ($)</option>
+              <option value="BTN">BTN (Nu.)</option>
+              <option value="GEL">GEL (₾)</option>
+              <option value="ISK">ISK (kr)</option>
+              <option value="KZT">KZT (₸)</option>
+              <option value="LAK">LAK (₭)</option>
+              <option value="MKD">MKD (ден)</option>
+              <option value="MNT">MNT (₮)</option>
+              <option value="NPR">NPR (₨)</option>
+              <option value="RON">RON (lei)</option>
+              <option value="RSD">RSD (дин)</option>
+              <option value="SCR">SCR (₨)</option>
+              <option value="TWD">TWD (NT$)</option>
+              <option value="UAH">UAH (₴)</option>
+              <option value="UZS">UZS (so'm)</option>
+              <option value="VUV">VUV (VT)</option>
+              <option value="WST">WST (WS$)</option>
+              <option value="XAF">XAF (FCFA)</option>
+              <option value="XOF">XOF (CFA)</option>
+              <option value="XPF">XPF (₣)</option>
             </select>
           </div>
 

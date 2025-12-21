@@ -1,7 +1,17 @@
 // Groq AI Insights Service
-const DEFAULT_MODELS = ['llama-3.1-8b-instant', 'mixtral-8x7b-8192', 'llama3-70b-8192', 'gemma-7b'];
+const DEFAULT_MODELS = [
+  'llama-3.1-8b-instant',
+  'llama-3.1-70b-versatile',
+  'mixtral-8x7b-32k',
+  'gemma-2-9b-it',
+];
 
 export async function fetchGroqInsights(transactions, { signal, model, models } = {}) {
+  // Basic validation to prevent malformed requests from the app
+  if (!transactions || !Array.isArray(transactions)) {
+    throw new Error('Invalid transactions argument: expected an array of transactions');
+  }
+
   if (!Array.isArray(models) || models.length === 0) {
     models = DEFAULT_MODELS;
   }
@@ -21,6 +31,10 @@ export async function fetchGroqInsights(transactions, { signal, model, models } 
     const timeout = setTimeout(() => controller.abort(), 15_000);
     overallController.signal.addEventListener('abort', () => controller.abort());
     try {
+      console.debug('Posting AI insights request', {
+        model: modelName,
+        transactionsLength: transactions.length,
+      });
       const res = await fetch(INSIGHTS_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,8 +51,12 @@ export async function fetchGroqInsights(transactions, { signal, model, models } 
           // ignore parse errors
         }
 
-        const message = parsed?.error?.message || `Failed to fetch insights: ${res.status}`;
-        const code = parsed?.error?.code;
+        const message =
+          parsed?.error?.message ||
+          parsed?.error ||
+          parsed?.message ||
+          `Failed to fetch insights: ${res.status}`;
+        const code = parsed?.error?.code || parsed?.code;
 
         if (code === 'model_decommissioned') {
           // Throw special object to let caller try next model
