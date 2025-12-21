@@ -6,6 +6,7 @@ import TransactionForm from '../components/transactions/TransactionForm';
 import TransactionList from '../components/transactions/TransactionList';
 import GlassCard from '../components/common/GlassCard.jsx';
 import SkeletonCard from '../components/common/SkeletonCard.jsx';
+import useAIInsights from '../hooks/useAIInsights';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -16,6 +17,16 @@ const Dashboard = () => {
     monthlyExpenses = {},
     categoryTotals = {},
   } = useFinance();
+
+  // AI Insights (hook)
+  const {
+    insights: aiInsights,
+    loading: loadingInsights,
+    error: insightsError,
+    lastUpdated,
+    refreshInsights,
+  } = useAIInsights(transactions);
+
   const [budgetData, setBudgetData] = React.useState([]);
   const shouldReduceMotion = useReducedMotion();
 
@@ -313,6 +324,36 @@ const Dashboard = () => {
               </motion.div>
             </>
           )}
+        </motion.div>
+
+        {/* AI-Powered Financial Insights */}
+        <motion.div className="mt-6" variants={itemVariants}>
+          <GlassCard title="AI Financial Insights" variant="elevated">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-sm text-gray-400">
+                {lastUpdated ? `Last updated ${new Date(lastUpdated).toLocaleString()}` : ''}
+              </div>
+              <div>
+                <button
+                  onClick={() => refreshInsights()}
+                  className="px-3 py-1 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+                  disabled={loadingInsights}
+                >
+                  {loadingInsights ? 'Refreshing...' : 'Regenerate'}
+                </button>
+              </div>
+            </div>
+
+            {loadingInsights ? (
+              <div className="text-gray-500">Loading insights...</div>
+            ) : insightsError ? (
+              <div className="text-red-500">{insightsError}</div>
+            ) : aiInsights ? (
+              <div className="whitespace-pre-line text-gray-800">{aiInsights}</div>
+            ) : (
+              <div className="text-gray-500">No insights available yet.</div>
+            )}
+          </GlassCard>
         </motion.div>
 
         {/* Quick insights */}

@@ -1,6 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { glassCardVariants } from '../layout/variants';
 
 const GlassCard = ({ title, icon, children, className = '', variant = 'default' }) => {
   const variants = {
@@ -11,13 +9,8 @@ const GlassCard = ({ title, icon, children, className = '', variant = 'default' 
   };
 
   return (
-    <motion.div
-      variants={glassCardVariants}
-      initial="hidden"
-      animate="show"
-      whileHover="hover"
-      whileTap="tap"
-      className={`relative overflow-hidden rounded-2xl p-6 ${variants[variant]} ${className}`}
+    <div
+      className={`relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:transform hover:-translate-y-1 ${variants[variant]} ${className}`}
     >
       {/* Enhanced Decorative Elements */}
       <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-pink-500/15 blur-2xl rounded-full pointer-events-none" />
@@ -35,7 +28,7 @@ const GlassCard = ({ title, icon, children, className = '', variant = 'default' 
         </div>
       )}
       <div className="relative z-10">{children}</div>
-    </motion.div>
+    </div>
   );
 };
 

@@ -53,4 +53,18 @@ export default [
       'react-refresh/only-export-components': 'off',
     },
   },
+  {
+    files: ['api/**/*.{js,jsx}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: { ...globals.node, ...globals.es2020 },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      'no-unused-vars': ['warn', { varsIgnorePattern: '^_|^[A-Z]' }],
+    },
+  },
 ];

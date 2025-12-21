@@ -7,11 +7,36 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 600,
     outDir: 'dist',
-    // Lazy loading works through React.lazy() and dynamic imports
-    // which are automatically code-split by Vite
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          charts: ['chart.js', 'react-chartjs-2', 'recharts'],
+          ui: ['framer-motion', 'lucide-react'],
+          forms: ['react-hook-form', '@hookform/resolvers', 'yup'],
+        },
+      },
+    },
+    sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      'chart.js',
+      'react-chartjs-2',
+      'lucide-react'
+    ],
+    exclude: ['@supabase/supabase-js'],
   },
   resolve: {
     alias: {
@@ -20,5 +45,10 @@ export default defineConfig({
   },
   server: {
     middlewareMode: false,
+    host: true,
+  },
+  preview: {
+    port: 4173,
+    host: true,
   },
 });
