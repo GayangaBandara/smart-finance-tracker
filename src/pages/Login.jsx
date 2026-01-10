@@ -100,7 +100,7 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <Footer />
+      <Footer fullWidth />
     </div>
   );
 };

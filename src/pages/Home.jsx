@@ -44,7 +44,7 @@ const Home = () => {
                 comprehensive finance tracking solution.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/register">
+                <Link to="/dashboard">
                   <Button size="lg">Get Started Free</Button>
                 </Link>
                 <Link to="/login">
@@ -96,7 +96,7 @@ const Home = () => {
           <p className="text-xl text-indigo-100 mb-8">
             Join thousands of users who are already managing their money better.
           </p>
-          <Link to="/register">
+          <Link to="/dashboard">
             <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50">
               Create Free Account
             </Button>

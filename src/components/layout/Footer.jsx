@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Footer = () => {
+const Footer = ({ fullWidth = false }) => {
   return (
-    <footer className="bg-white border-t border-gray-200 mt-auto flex-shrink-0 relative z-5 w-screen md:w-auto md:ml-64 md:w-[calc(100%-256px)]">
+    <footer
+      className={`bg-white border-t border-gray-200 mt-auto flex-shrink-0 relative z-5 ${fullWidth ? 'w-screen' : 'w-screen md:w-auto md:ml-64 md:w-[calc(100%-256px)]'}`}
+    >
       <div className="max-w-full px-4 sm:px-6 lg:px-8">
         <div className="py-6 sm:py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">

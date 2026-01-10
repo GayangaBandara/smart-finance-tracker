@@ -114,7 +114,7 @@ const Register = () => {
           </form>
         </div>
       </div>
-      <Footer />
+      <Footer fullWidth />
     </div>
   );
 };
